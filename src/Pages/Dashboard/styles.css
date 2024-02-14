@@ -1,0 +1,31 @@
+div.flex > label > div > span {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #000;
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+div.flex > label {
+    display: flex;
+    padding:50px;
+    width: 200px;
+    height: 300px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+div.flex > label > svg{
+    height:50px
+}
+
+div.flex > label > div{
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+}
+
+div.flex > label > div > span:last-child{
+    display: none;
+}
