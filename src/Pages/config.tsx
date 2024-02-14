@@ -29,9 +29,9 @@ export const RouterConfigure = createBrowserRouter([
   {
     path: "/register",
     element: (
-      // <GetAuth>
+      <GetAuth>
         <Register />
-      // </GetAuth>
+       </GetAuth>
     ),
   },
 ]);
