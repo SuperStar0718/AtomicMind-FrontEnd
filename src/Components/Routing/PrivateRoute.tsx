@@ -1,10 +1,4 @@
-import React, { useEffect } from "react";
-import { Navigate } from "react-router-dom";
-import Spinner from "../Spinner";
-import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
 import { Outlet } from "react-router-dom";
-import { RootState } from "@/store";
 import { loadUser } from "@/actions/auth";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";

@@ -6,7 +6,6 @@ import { AppDispatch, RootState } from "@/store";
 import { generateResponse, uploadFile } from "@/actions/chat";
 import { SET_QUERY } from "@/actions/types";
 import { toast } from "react-hot-toast";
-import { useRef } from "react";
 import ScrollToBottom from 'react-scroll-to-bottom';
 import UserImage from "@/assets/images/user.png";
 
@@ -95,7 +94,7 @@ const Content = (props) => {
                   {props.chat_history.length > 0 ? (
                     props.chat_history.map((chat, index) => {
                       return (
-                        <div className={`flex items-start p-5 ${chat.question ? ' flex-row-reverse ' : ''}`}> 
+                        <div key={index} className={`flex items-start p-5 ${chat.question ? ' flex-row-reverse ' : ''}`}> 
                           <div className="min-w-fit">
                                 <img
                                     height="50"

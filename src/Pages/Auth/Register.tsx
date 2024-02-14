@@ -2,7 +2,6 @@ import { TERipple, TEInput } from "tw-elements-react";
 import Logo from "../../assets/images/login.webp";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { registerAction } from "@/actions/auth";
@@ -33,8 +32,7 @@ const Register = () => {
     );
 
   // get functions to build form with useForm() hook
-  const { register, handleSubmit, formState } = useForm<FormValues>();
-  const { errors } = formState;
+  const { register, handleSubmit } = useForm<FormValues>();
 
   useEffect(() => {
     console.log('isAuthenticated', isAuthenticated);

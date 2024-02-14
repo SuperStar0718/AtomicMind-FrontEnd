@@ -6,9 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "@/store";
 import { loginAction } from "@/actions/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useCallback, useEffect } from "react";
-import setAuthToken from "@/utils/setAuthToken";
-import { LOGOUT } from "@/actions/types";
+import {  useEffect } from "react";
 
 function Login() {
   const dispatch = useDispatch<AppDispatch>();
@@ -22,8 +20,7 @@ function Login() {
 
   
   // get functions to build form with useForm() hook
-  const { register, handleSubmit, formState } = useForm<FormValues>();
-  const { errors } = formState;
+  const { register, handleSubmit } = useForm<FormValues>();
 
   useEffect(() => {
     if (isAuthenticated && user) {

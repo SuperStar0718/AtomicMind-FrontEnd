@@ -1,9 +1,6 @@
-import { AppDispatch, RootState } from "@/store";
+import { RootState } from "@/store";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { loadUser } from "@/actions/auth";
-import setAuthToken from "@/utils/setAuthToken";
-import { LOGOUT } from "@/actions/types";
 import { LeftSidebar } from "./LeftSidebar";
 import Content from "./Content";
 import { useNavigate } from "react-router-dom";

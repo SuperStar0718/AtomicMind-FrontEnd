@@ -1,8 +1,7 @@
 import axios from 'axios';
 import api from '@/utils/api';
-import { GET_RESPONSE, UPLOAD_FILE } from './types';
+import { GET_RESPONSE } from './types';
 import { AppDispatch } from '@/store';
-import { createAsyncThunk } from '@reduxjs/toolkit';
 import toast from 'react-hot-toast';
 
 const baseURL = import.meta.env.VITE_BACKEND_API || '';
