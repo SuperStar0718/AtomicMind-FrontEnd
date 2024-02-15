@@ -30,3 +30,4 @@ jobs:
             git pull origin prod
             npm install
             npm run build
+            cp .htaccess /dist
