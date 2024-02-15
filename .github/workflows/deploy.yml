@@ -7,6 +7,11 @@ jobs:
   web-deploy:
     name: Deploy
     runs-on: ubuntu-latest
+    env:
+      SSH_HOST: ${{ secrets.env.SSH_HOST }}
+      SSH_USERNAME: ${{ secrets.env.SSH_USERNAME }}
+      SSH_PASSWORD: ${{ secrets.env.SSH_PASSWORD }}
+      SSH_PORT: ${{ secrets.env.SSH_PORT }}
     strategy:
       matrix:
         node-version: [18.x]
@@ -20,12 +25,12 @@ jobs:
       - name: Update code
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ env.SSH_HOST }}
+          username: ${{ env.SSH_USERNAME }}
+          password: ${{ env.SSH_PASSWORD }}
+          port: ${{ env.SSH_PORT }}
           script: |
-            cd /var/www/vhosts/atomicask.com/httpdocs
+            cd /var/www/vhosts/atomicask.com/httpdocs/
             git reset --hard
             git pull origin prod
             
