@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SSH_HOST: ${{ secrets.Env.SSH_HOST }}
-      SSH_USERNAME: ${{ secrets.Env.SSH_USERNAME }}
-      SSH_PASSWORD: ${{ secrets.Env.SSH_PASSWORD }}
+      SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+      SSH_PASSWORD: ${{ secrets.env.SSH_PASSWORD }}
       SSH_PORT: ${{ secrets.Env.SSH_PORT }}
     strategy:
       matrix:
