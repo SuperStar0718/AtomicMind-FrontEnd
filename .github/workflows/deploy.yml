@@ -30,8 +30,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd /var/www/vhosts/atomicask.com/httpdocs/
-            git reset --hard
-            git pull origin prod
+            sudo git fetch --all
+            sudo git reset --hard origin/prod
             npm install
             npm run build
             cp .htaccess /dist
