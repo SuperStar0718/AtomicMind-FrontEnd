@@ -31,7 +31,7 @@ jobs:
           script: |
             cd /var/www/vhosts/atomicask.com/httpdocs/
             git reset --hard
-            git pull
+            git pull origin prod
             npm install
             npm run build
             cp .htaccess /dist
