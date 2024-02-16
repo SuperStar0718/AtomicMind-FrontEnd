@@ -55,7 +55,7 @@ function Login() {
           <form  onSubmit={handleSubmit(onSubmit)}>
             {/* <!--Sign in section--> */}
             <div className="flex flex-row items-center justify-center lg:justify-start">
-              <p className="mb-0 mr-4 text-lg">Sign in with sss</p>
+              <p className="mb-0 mr-4 text-lg">Sign in with</p>
 
               {/* <!-- Facebook button--> */}
               <TERipple rippleColor="light">
