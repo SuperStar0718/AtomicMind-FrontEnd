@@ -109,6 +109,7 @@ export const Content = () => {
           .replace(/\\n/g, "\n")
           .replace(/```$/, "")
           .replace("markdown", "");
+          console.log("text:", text);
         setChatHistory((prev) => {
           // console.log("prev:", prev);
           // If there are messages, update the last one
