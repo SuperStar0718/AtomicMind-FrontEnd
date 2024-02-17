@@ -2,7 +2,7 @@ import { RootState } from "@/store";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { LeftSidebar } from "./LeftSidebar";
-import Content from "./Content";
+import {Content} from "./Content";
 import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
@@ -13,7 +13,6 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (!isAuthenticated || user == "") {
-      console.log("dashboard not authenticated");
       navigate("/login");
     }
   }, [isAuthenticated, user]);

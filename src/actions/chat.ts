@@ -1,72 +1,48 @@
-import axios from 'axios';
-import api from '@/utils/api';
-import { GET_RESPONSE } from './types';
-import { AppDispatch } from '@/store';
-import toast from 'react-hot-toast';
+import axios from "axios";
+import api from "@/utils/api";
+import { GET_RESPONSE } from "./types";
+import { AppDispatch } from "@/store";
+import toast from "react-hot-toast";
 
-const baseURL = import.meta.env.VITE_BACKEND_API || '';
+const baseURL = import.meta.env.VITE_BACKEND_API || "";
 
+export const uploadFiles = (formData: FormData) => {
+  return async () => {
+    try {
+      const api = axios.create({
+        baseURL: baseURL + "api",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-// export const uploadFile = createAsyncThunk(
-//     UPLOAD_FILE,
-//     async (formData: FormData) => {
-//         try {
-//         const api = axios.create({s
-//             baseURL: baseURL + 'api',
-//             headers: {
-//             'Content-Type': 'multipart/form-data',
-//             },
-//         });
-    
-//         const res = await api.post('/chat/uploadFile', formData);
-//         console.log('res from file upload:', res);
-//         } catch (err: any) {
-//         console.error(err);
-//         }
-//     }
-//     );
-
-export const uploadFile  = async (formData: FormData) => { 
-    try{
-        const api = axios.create({
-            baseURL: baseURL + 'api',
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            }
-          });
-       
-        const res = await api.post("/chat/uploadFile", formData);
-        console.log('res from file upload:', res);
+      await api.post("/chat/uploadFiles", formData);
+      toast.success("File uploaded successfully");
     } catch (err: any) {
-        console.error(err);
+      console.error(err);
+      toast.error("Error uploading file");
     }
-    
- };
+  };
+};
 
-// export const generateResponse = createAsyncThunk(
-//     GET_RESPONSE,
-//     async (req: any) => {
-//         try {
-//         const res = await api.post('/chat/generateResponse', req);
-//         console.log('res from gpt:', res);
-//         return { answer: res.data.answer.text };
-//         } catch (err: any) {
-//         console.error(err);
-//         }
-//     }
-//     );
-
- export const generateResponse = (req) => async (dispatch: AppDispatch)=> { 
-    try{
-       
-        const res = await api.post("/chat/generateResponse", req);
-        dispatch({type: GET_RESPONSE, payload: {answer: res.data.answer.text}})
-        console.log('res from gpt:', res);
+export const generateResponse = (req) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const api = axios.create({
+        baseURL: baseURL + "api",
+        headers: {
+          "Content-Type": "text/event-stream",
+        },
+      });
+    //   dispatch({
+    //     type: GET_RESPONSE,
+    //     payload: { answer: res.data.answer.text },
+    //   });
+      const res = await api.post("/chat/generateResponse", req);
+      return res;
     } catch (err: any) {
-        console.error(err);
-        toast.error('Error generating response');
+      console.error(err);
+      toast.error("Error generating response");
     }
-    
- }
-
- 
+  };
+};
