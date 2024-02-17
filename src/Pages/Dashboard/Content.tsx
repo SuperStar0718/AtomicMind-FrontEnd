@@ -28,7 +28,6 @@ export const Content = () => {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
 
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File>(null);
 
   const handleChange = (file: File) => {

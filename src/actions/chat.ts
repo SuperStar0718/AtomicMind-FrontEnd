@@ -1,6 +1,4 @@
 import axios from "axios";
-import api from "@/utils/api";
-import { GET_RESPONSE } from "./types";
 import { AppDispatch } from "@/store";
 import toast from "react-hot-toast";
 
@@ -26,7 +24,7 @@ export const uploadFiles = (formData: FormData) => {
 };
 
 export const generateResponse = (req) => {
-  return async (dispatch: AppDispatch) => {
+  return async () => {
     try {
       const api = axios.create({
         baseURL: baseURL + "api",
