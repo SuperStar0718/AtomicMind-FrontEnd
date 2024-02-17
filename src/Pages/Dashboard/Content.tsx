@@ -1,19 +1,34 @@
 import { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import "./styles.css";
-import { connect, useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "@/store";
-import { generateResponse, uploadFile } from "@/actions/chat";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { uploadFiles } from "@/actions/chat";
 import { SET_QUERY } from "@/actions/types";
 import { toast } from "react-hot-toast";
-import ScrollToBottom from 'react-scroll-to-bottom';
+import ScrollToBottom from "react-scroll-to-bottom";
 import UserImage from "@/assets/images/user.png";
+import BotImage from "@/assets/images/bot.png";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const fileTypes = ["PDF", "TXT"];
+/**
+ * Represents a message in the chat.
+ */
+interface Message {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
 
-const Content = (props) => {
+export const Content = () => {
+  const baseURL = import.meta.env.VITE_BACKEND_API || "";
+
   const dispatch = useDispatch<AppDispatch>();
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
+
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File>(null);
 
   const handleChange = (file: File) => {
@@ -22,25 +37,109 @@ const Content = (props) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileName", file.name);
-    dispatch(uploadFile(formData));
+    dispatch(uploadFiles(formData));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const req = {
-      query: query,
+      prompt: query,
       file: file?.name,
     };
-    if(!file){
-      toast.error('Please upload a file');
-    } else{
+    if (!file) {
+      toast.error("Please upload a file");
+    } else {
       dispatch({ type: SET_QUERY, payload: { question: query } });
-      dispatch(generateResponse(req));
+
+      const userInput: Message = { role: "user", content: query };
       setQuery("");
-      // console.log('query:', query)
+
+      const updatedChatHistory = [...chatHistory, userInput];
+      setChatHistory(updatedChatHistory);
+      // dispatch(generateResponse(req));
+      const response = await fetch(baseURL + "api/chat/generateResponse", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req),
+      });
+      const reader = response.body.getReader();
+      setChatHistory((prevChatHistory) => [
+        ...prevChatHistory,
+        { role: "assistant", content: "" },
+      ]);
+      let receivedText = "";
+      const stream = new ReadableStream({
+        async start(controller) {
+          // eslint-disable-next-line no-constant-condition
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            // Convert the Uint8Array to a string
+            receivedText += new TextDecoder("utf-8").decode(value);
+            // Process each message (assuming messages are separated by double newlines)
+            const parts = receivedText.split("\n\n");
+            receivedText = parts.pop(); // Last part might be incomplete; keep it for next round
+
+            parts.forEach((part) => {
+              const match = part.match(/^data: (.*)$/);
+              if (match) {
+                // Remove quote symbols from start and end of the string
+                const messageWithoutQuotes = match[1]
+                  .trim()
+                  .replace(/^"|"$/g, "");
+                controller.enqueue(messageWithoutQuotes);
+              }
+            });
+          }
+          controller.close();
+          reader.releaseLock();
+        },
+      });
+      const streamReader = stream.getReader();
+      while (true) {
+        const { done, value } = await streamReader.read();
+        if (done) {
+          reader.releaseLock();
+          break;
+        }
+        console.log("value:", value);
+        const text = value
+          .replace(/\\n/g, "\n")
+          .replace(/```$/, "")
+          .replace("markdown", "");
+        setChatHistory((prev) => {
+          console.log("prev:", prev);
+          // If there are messages, update the last one
+          return prev.map(
+            (msg, index) =>
+              index === prev.length - 1
+                ? { ...msg, content: msg.content + text } // Update the last message
+                : msg // Keep all other messages unchanged
+          );
+        });
+        // Assuming the stream is sending text data
+        // const text = new TextDecoder('utf-8').decode(value);
+        // console.log("text:",text);
+
+        // const response = JSON.parse(value);
+        // console.log('event:', response);
+      }
+
+      // setChatHistory(updatedChatHistory)
+      // updatedChatHistory.push({ role: 'assistant', content: '' });
     }
   };
+  // useEffect(() => {
+  //   const eventSource = new EventSource(baseURL + 'api/chat/generateResponse');
+  //   eventSource.onmessage = (event) => {
+  //     const response = JSON.parse(event.data);
+  //     console.log('event:', response);
+
+  //   }
+  // },[])
 
   return (
     <>
@@ -91,22 +190,40 @@ const Content = (props) => {
             >
               <div className="overflow-auto flex flex-col md:h-[calc(100vh-48px)] h-[calc(100vh-96px)] justify-between">
                 <ScrollToBottom className="h-full overflow-auto">
-                  {props.chat_history.length > 0 ? (
-                    props.chat_history.map((chat, index) => {
+                  {chatHistory.length > 0 ? (
+                    chatHistory.map((chat, index) => {
                       return (
-                        <div key={index} className={`flex items-start p-5 ${chat.question ? ' flex-row-reverse ' : ''}`}> 
+                        <div
+                          key={index}
+                          className={`flex items-start p-5 ${
+                            chat.role == "user" ? " flex-row-reverse " : ""
+                          }`}
+                        >
                           <div className="min-w-fit">
-                                <img
-                                    height="50"
-                                    width="50"
-                                    src={`${chat.question ? UserImage : UserImage}`}
-                                />
-                            </div>
-                            <div className={`min-h-[50px] p-4 ${chat.question? 'bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl' : 'bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl'}`}>
-                              {chat.question ? chat.question : chat.answer}
-                            </div>
+                            <img
+                              height="50"
+                              width="50"
+                              src={`${
+                                chat.role == "user" ? UserImage : BotImage
+                              }`}
+                            />
+                          </div>
+                          <div
+                            className={`min-h-[50px] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 p-4 ${
+                              chat.role == "user"
+                                ? "bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl"
+                                : "bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl"
+                            }`}
+                          >
+                            <ReactMarkdown
+                              key={index}
+                              remarkPlugins={[remarkGfm]}
+                            >
+                              {chat.content}
+                            </ReactMarkdown>
+                          </div>
                         </div>
-                      )
+                      );
                     })
                   ) : (
                     <div className="flex items-center justify-center h-full ">
@@ -122,7 +239,7 @@ const Content = (props) => {
 
                 <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
                   <form
-                    className="max-w-5xl flex flex-col flex-1 flex-grow pl-2 md:pl-4 relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]"
+                    className="max-w-5xl flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]"
                     onSubmit={(e) => handleSubmit(e)}
                   >
                     <input
@@ -170,11 +287,3 @@ const Content = (props) => {
     </>
   );
 };
-
-const mapstateToProps = (state: RootState) => {
-  return {
-    chat_history: state.chat.chat_history,
-  };
-};
-
-export default connect(mapstateToProps)(Content);

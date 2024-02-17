@@ -24,7 +24,6 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      console.log('navigating');
       navigate("/");
     }
   }, [isAuthenticated, user]);
@@ -33,8 +32,6 @@ function Login() {
     email,
     password,
   }: FormValues) => {
-    console.log('email', email);
-    console.log('password', password);
     dispatch(loginAction({ email, password }));
   };
   return (

@@ -35,10 +35,7 @@ const Register = () => {
   const { register, handleSubmit } = useForm<FormValues>();
 
   useEffect(() => {
-    console.log('isAuthenticated', isAuthenticated);
-    console.log('user', user);
     if (isAuthenticated && user) {
-      console.log('navigating');
       navigate("/");
     }
   }, [isAuthenticated, user]);
@@ -47,8 +44,6 @@ const Register = () => {
     email,
     password,
   }: FormValues) => {
-    console.log('email', email);
-    console.log('password', password);
     dispatch(registerAction({ email, password }));
   };
   return (

@@ -10,7 +10,6 @@ const initialState: { chat_history: IHistory[] } = {
 
 function chatReducer(state = initialState, action: any) {
   const { type, payload } = action;
-    console.log('payload:', payload)
   switch (type) {
     case GET_RESPONSE:
     case SET_QUERY:
