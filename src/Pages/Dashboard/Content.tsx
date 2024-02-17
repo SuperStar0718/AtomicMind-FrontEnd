@@ -104,13 +104,13 @@ export const Content = () => {
           reader.releaseLock();
           break;
         }
-        console.log("value:", value);
+        // console.log("value:", value);
         const text = value
           .replace(/\\n/g, "\n")
           .replace(/```$/, "")
           .replace("markdown", "");
         setChatHistory((prev) => {
-          console.log("prev:", prev);
+          // console.log("prev:", prev);
           // If there are messages, update the last one
           return prev.map(
             (msg, index) =>
