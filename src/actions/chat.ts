@@ -1,5 +1,4 @@
 import axios from "axios";
-import { AppDispatch } from "@/store";
 import toast from "react-hot-toast";
 
 const baseURL = import.meta.env.VITE_BACKEND_API || "";
