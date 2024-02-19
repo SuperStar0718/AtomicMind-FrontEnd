@@ -6,9 +6,9 @@ import type { InstanceOptions } from "flowbite";
 
 import ThreeDot from "@/assets/images/three_dot.svg";
 import RightArrow from "@/assets/images/right_arrow.svg";
-import Folder from "@/assets/images/folder.svg";
+import Document from "@/assets/images/document.svg";
 
-const FolderGroup = ({ children }) => {
+const DocumentGroup = ({ children }) => {
   const [opened, setOpened] = useState(false);
   const folderDropDownButton = useRef(null);
   const folderDropDownMenu = useRef(null);
@@ -60,8 +60,8 @@ const FolderGroup = ({ children }) => {
   }, []);
 
   return (
-    <div className="px-2 pt-2">
-      <div className="flex items-center w-full pb-2">
+    <div className="p-2">
+      <div className="flex items-center w-full">
         <button
           className=" h-8 p-button hover:bg-gray-100 p-component p-button-icon-only p-button-text rounded p-button-sm p-button-secondary px-[5px]"
           data-pc-name="button"
@@ -88,9 +88,9 @@ const FolderGroup = ({ children }) => {
             onClick={() => setOpened(!opened)}
             type="button"
           >
-            <img src={Folder} alt="" className="h-[14px] w-[14px] " />
+            <img src={Document} alt="" className="h-[14px] w-[14px] " />
             <span data-pc-section="label" className="text-sm ">
-              Folders
+              All Documents
             </span>
           </button>
           <button
@@ -108,33 +108,27 @@ const FolderGroup = ({ children }) => {
               className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
               onClick={() => onClickCreateFolder()}
             >
-              Create Folder
+              Upload Documents
             </div>
           </div>
         </div>
       </div>
       {opened ? (
-        <hr className="-mx-2 " />
-      ) : ""}
-      {opened ? (
-        <>
-          <div className="p-1 mt-1 space-y-2 ">
-            {children.length > 0 ? (
-              children
-            ) : (
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-500">No Folders Created Yet</p>
-                <button
-                  className="items-center bg-[#6366f1] text-white cursor-pointer text-sm   flex justify-between p-2  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
-                  onClick={onClickCreateFolder}
-                >
-                  Create Folder
-                </button>
-              </div>
-            )}
-          </div>
-          <hr className="-mx-2 " />
-        </>
+        <div className="p-1 mt-1 space-y-2 border-t border-b">
+          {children.length > 0 ? (
+            <div className="p-1 mx-1 mt-1 space-y-2 bg-slate-100">{children}</div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-500">No Documents</p>
+              <button
+                className="items-center bg-[#6366f1] text-white cursor-pointer text-sm   flex justify-between p-2  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
+                onClick={onClickCreateFolder}
+              >
+                Upload
+              </button>
+            </div>
+          )}
+        </div>
       ) : (
         ""
       )}
@@ -142,4 +136,4 @@ const FolderGroup = ({ children }) => {
   );
 };
 
-export default FolderGroup;
+export default DocumentGroup;

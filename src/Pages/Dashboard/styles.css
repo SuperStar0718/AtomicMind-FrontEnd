@@ -26,7 +26,7 @@ div.flex > label > div {
   height: fit-content;
   justify-content: center;
   height: 40px;
-  flex-grow:0;
+  flex-grow: 0;
 }
 
 div.flex > label > div > span:last-child {
@@ -70,13 +70,11 @@ div.flex > label > div > span:last-child {
   height: 3rem;
 }
 
-
-
 /* Basic Reset */
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html {
@@ -120,15 +118,19 @@ ul {
 }
 /* Document */
 body {
-    font-family: sans-serif;
-    line-height: 1.5;
-    font-size: 100%; /* Typically 16px */
+  font-family: sans-serif;
+  line-height: 1.5;
+  font-size: 100%; /* Typically 16px */
 }
 
 /* Headings */
-h1, h2,  h4, h5, h6 {
-    font-weight: bold !important;
-    margin-bottom: 0.5em !important;
+h1,
+h2,
+h4,
+h5,
+h6 {
+  font-weight: bold !important;
+  margin-bottom: 0.5em !important;
 }
 h3 {
   display: block;
@@ -141,24 +143,35 @@ h3 {
   font-weight: bold !important;
 }
 
-h1 { font-size: 2rem !important; }
-h2 { font-size: 1.5rem !important; }
-h4 { font-size: 1.00rem !important; }
-h5 { font-size: 0.83rem !important; }
-h6 { font-size: 0.67rem !important; }
+h1 {
+  font-size: 2rem !important;
+}
+h2 {
+  font-size: 1.5rem !important;
+}
+h4 {
+  font-size: 1rem !important;
+}
+h5 {
+  font-size: 0.83rem !important;
+}
+h6 {
+  font-size: 0.67rem !important;
+}
 
 p {
   display: block;
-  margin:revert !important;
+  margin: revert !important;
   margin-block-start: 1em;
   margin-block-end: 1em;
   margin-inline-start: 0px;
   margin-inline-end: 0px;
 }
 /* Lists */
-ul, ol {
-    margin-bottom: 1em;
-    padding-left: 40px;
+ul,
+ol {
+  margin-bottom: 1em;
+  padding-left: 40px;
 }
 
 ul {
@@ -174,59 +187,71 @@ ul {
 }
 
 li {
-    margin-bottom: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 /* Links */
 a {
-    color: blue;
-    text-decoration: underline;
+  color: blue;
+  text-decoration: underline;
 }
 
 /* Tables */
 table {
-    border-collapse: collapse;
-    width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
-th, td {
-    text-align: left;
-    border: 1px solid #ddd;
-    padding: 8px;
+th,
+td {
+  text-align: left;
+  border: 1px solid #ddd;
+  padding: 8px;
 }
 
 th {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 /* Forms */
-input, button, select, textarea {
-    font-family: inherit;
-    font-size: 100%;
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
 }
 
-button, input[type="submit"], input[type="reset"], input[type="button"] {
-    cursor: pointer;
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  cursor: pointer;
 }
 
 fieldset {
-    border: 1px solid #ddd;
-    padding: 10px;
+  border: 1px solid #ddd;
+  padding: 10px;
 }
 
 legend {
-    padding: 0 10px;
+  padding: 0 10px;
 }
 
 label {
-    margin-bottom: 0.5em;
-    display: block;
+  margin-bottom: 0.5em;
+  display: block;
 }
 
 /* Miscellaneous */
 img {
-    max-width: 100%;
-    height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 /* Add more styles as needed */
+
+div.select-menu p {
+  padding: 0px;
+  margin: 0px !important;
+}

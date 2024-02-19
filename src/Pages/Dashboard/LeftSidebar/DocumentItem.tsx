@@ -1,17 +1,35 @@
 import ThreeDot from "@/assets/images/three_dot.svg";
 import { useEffect, useRef } from "react";
-import { Dropdown, Modal } from "flowbite";
+import { Dropdown } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import type { InstanceOptions } from "flowbite";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { deleteDocument } from "@/actions/chat";
+import { loadUser } from "@/actions/auth";
 
-const DocumentItem = ({ documentName }) => {
+const DocumentItem = ({ documentName, folderName }: {documentName:string, folderName?:string}) => {
+  const { userData } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+
   const dropDownButton = useRef(null);
   const dropDownMenu = useRef(null);
 
-  const onClickCreateFolder = () => {
-    const modal = new Modal(document.getElementById("createFolder"));
-    modal.show();
-  };
+  const onClickView = () => {
+    console.log('View')
+  }
+
+  const onClickDelete = () => {
+    const data = {
+      id: userData._id,
+      folderName: folderName,
+      documentName: documentName,
+    };
+    dispatch(deleteDocument(data,()=>{
+      console.log('deleted')
+      dispatch(loadUser())
+    }));
+  }
 
   useEffect(() => {
     // set the dropdown menu element
@@ -36,7 +54,6 @@ const DocumentItem = ({ documentName }) => {
 
     // instance options object
     const instanceOptions: InstanceOptions = {
-      id: "dropdownMenu",
       override: false,
     };
 
@@ -76,13 +93,13 @@ const DocumentItem = ({ documentName }) => {
           >
             <div
               className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickCreateFolder()}
+              onClick={()=> onClickView()}
             >
              View
             </div>
             <div
               className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickCreateFolder()}
+              onClick={()=> onClickDelete()}
             >
              Delete
             </div>
