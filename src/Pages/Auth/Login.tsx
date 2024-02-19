@@ -14,7 +14,7 @@ function Login() {
  
 
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useSelector(
+  const { isAuthenticated, userData } = useSelector(
     (state: RootState) => state.auth
   );
 
@@ -23,10 +23,10 @@ function Login() {
   const { register, handleSubmit } = useForm<FormValues>();
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && userData) {
       navigate("/");
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, userData]);
   
   const onSubmit: SubmitHandler<FormValues> = ({
     email,

@@ -1,35 +1,49 @@
 import { useState } from "react";
 import { Modal } from "flowbite";
 import { FileUploader } from "react-drag-drop-files";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import { uploadFiles } from "@/actions/chat";
+import { loadUser } from "@/actions/auth";
 
 const fileTypes = ["PDF", "TXT"];
 
-export const UploadDialog = () => {
+export const CreateFolderDialog = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [fileList, setFileList] = useState<FileList | null>(null);
   const [files, setFiles] = useState<File[] | null>(null);
+  const [folderName, setFolderName] = useState<string>("");
+  const [error, setError] = useState('');
+
+  const { userData } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   const onClickCancel = () => {
     // Close the modal
-    const modal = new Modal(document.getElementById("uploadDocument"));
+    const modal = new Modal(document.getElementById("createFolder"));
     modal.hide();
   };
 
   const onClickUpload = () => {
+    validateInput(folderName);
     if (!fileList) {
       return;
     }
+    
     // 👇 Create new FormData object and append files
     const data = new FormData();
+    data.append('id', userData._id)
+    data.append('folderName', folderName);
     const files = fileList ? [...fileList] : [];
     files.forEach((file, i) => {
       data.append(`file-${i}`, file, file.name);
     });
-    dispatch(uploadFiles(data));
+    if(dispatch(uploadFiles(data))){
+      onClickCancel();
+      dispatch(loadUser());
+    }
   };
 
   const handleChange = (fileList: FileList) => {
@@ -39,18 +53,35 @@ export const UploadDialog = () => {
     console.log("file:", fileList);
   };
 
+  const handleInputChange = (event) => {
+    const { value } = event.target;
+    setFolderName(value);
+    validateInput(folderName);
+
+  };
+
+  const validateInput = (value) => {
+    // Example validation: input must not be empty
+    if (!value.trim()) {
+      setError('This field is required');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
   return (
     <div
-      id="uploadDocument"
+      id="createFolder"
       tabIndex={-1}
       aria-hidden="true"
       className="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
     >
       <div className="relative w-full max-w-2xl max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-          <div className="flex items-start justify-between p-5 rounded-t dark:border-gray-600">
+          <div className="flex items-center px-5 pt-3 rounded-t dark:border-gray-600">
             <h3 className="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white">
-              Upload Files
+              Create Folder
             </h3>
             <button
               type="button"
@@ -71,10 +102,23 @@ export const UploadDialog = () => {
               </svg>
             </button>
           </div>
-          <div className="p-6 space-y-6">
-            <h2 className="text-gray-900 dark:text-white">File Uploader</h2>
+          <div className="px-6">
+            <label className="block mb-2 text-sm font-semibold text-gray-700">
+              Folder Name
+            </label>
+            <input
+              className={`w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline ${error? "border-red-500 border " : " border-black" }`}              id="folderName"
+              type="text"
+              placeholder="New Folder"
+              onChange={handleInputChange}
+              required
+            />
+            {error && <p className="mt-1 text-xs text-red-500 ">{error}</p>}
+          </div>
+          <div className="p-6 ">
+            <label className="text-sm font-semibold text-gray-700">File Uploader</label>
             <div className="space-y-4">
-              <div className="flex flex-col items-center justify-center gap-2 bg-white cursor-pointer rounded-xl hover:bg-slate-50 py-14">
+              <div className="flex flex-col items-center justify-center gap-2 py-6 bg-white cursor-pointer rounded-xl hover:bg-slate-50">
                 <FileUploader
                   handleChange={handleChange}
                   name="file"

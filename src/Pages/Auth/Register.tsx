@@ -27,7 +27,7 @@ const Register = () => {
   const dispatch = useDispatch<AppDispatch>();
  
   const navigate = useNavigate();
-    const { isAuthenticated, user } = useSelector(
+    const { isAuthenticated, userData } = useSelector(
       (state: RootState) => state.auth
     );
 
@@ -35,10 +35,10 @@ const Register = () => {
   const { register, handleSubmit } = useForm<FormValues>();
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && userData) {
       navigate("/");
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, userData]);
   
   const onSubmit: SubmitHandler<FormValues> = ({
     email,

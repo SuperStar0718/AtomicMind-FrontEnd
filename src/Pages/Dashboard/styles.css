@@ -70,10 +70,7 @@ div.flex > label > div > span:last-child {
   height: 3rem;
 }
 
-.p-button.p-button-icon-only {
-  padding: 0.75rem 0;
-  width: 3rem;
-}
+
 
 /* Basic Reset */
 *,

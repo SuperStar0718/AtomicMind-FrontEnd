@@ -25,7 +25,7 @@ export const Content = () => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
 
   const dispatch = useDispatch<AppDispatch>();
-  const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
 
   const [query, setQuery] = useState("");
   const [file, setFile] = useState<File>(null);
@@ -98,20 +98,19 @@ export const Content = () => {
         },
       });
       const streamReader = stream.getReader();
+      // eslint-disable-next-line no-constant-condition
       while (true) {
         const { done, value } = await streamReader.read();
         if (done) {
           reader.releaseLock();
           break;
         }
-        // console.log("value:", value);
         const text = value
           .replace(/\\n/g, "\n")
           .replace(/```$/, "")
           .replace("markdown", "");
           console.log("text:", text);
         setChatHistory((prev) => {
-          // console.log("prev:", prev);
           // If there are messages, update the last one
           return prev.map(
             (msg, index) =>
@@ -120,26 +119,10 @@ export const Content = () => {
                 : msg // Keep all other messages unchanged
           );
         });
-        // Assuming the stream is sending text data
-        // const text = new TextDecoder('utf-8').decode(value);
-        // console.log("text:",text);
-
-        // const response = JSON.parse(value);
-        // console.log('event:', response);
       }
-
-      // setChatHistory(updatedChatHistory)
-      // updatedChatHistory.push({ role: 'assistant', content: '' });
     }
   };
-  // useEffect(() => {
-  //   const eventSource = new EventSource(baseURL + 'api/chat/generateResponse');
-  //   eventSource.onmessage = (event) => {
-  //     const response = JSON.parse(event.data);
-  //     console.log('event:', response);
-
-  //   }
-  // },[])
+ 
 
   return (
     <>

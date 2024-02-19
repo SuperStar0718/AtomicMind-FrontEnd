@@ -7,7 +7,7 @@ export const uploadFiles = (formData: FormData) => {
   return async () => {
     try {
       const api = axios.create({
-        baseURL: baseURL + "api",
+      baseURL: baseURL + "api",
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -15,7 +15,8 @@ export const uploadFiles = (formData: FormData) => {
 
       await api.post("/chat/uploadFiles", formData);
       toast.success("File uploaded successfully");
-    } catch (err: any) {
+      return true
+    } catch (err: unknown) {
       console.error(err);
       toast.error("Error uploading file");
     }
@@ -37,7 +38,7 @@ export const generateResponse = (req) => {
     //   });
       const res = await api.post("/chat/generateResponse", req);
       return res;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       toast.error("Error generating response");
     }

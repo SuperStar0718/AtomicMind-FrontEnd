@@ -7,12 +7,17 @@ import {
     //LOGIN_FAIL,
     LOGOUT,
   } from "../actions/types";
+
+  export interface IFolder{
+    folderName: string;
+    documents: string[];
+  }
   
   const initialState = {
     token: localStorage.getItem("token"),
     isAuthenticated: null,
     loading: true,
-    user: null,
+    userData: null,
   };
   
   function authReducer(state = initialState, action: any) {
@@ -24,7 +29,7 @@ import {
           ...state,
           isAuthenticated: true,
           loading: false,
-          user: payload,
+          userData: payload,
         };
       case REGISTER_SUCCESS:
       case LOGIN_SUCCESS:
@@ -41,7 +46,7 @@ import {
           token: null,
           isAuthenticated: false,
           loading: false,
-          user: null,
+          userData: null,
         };
       default:
         return state;
