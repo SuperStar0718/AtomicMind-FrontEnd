@@ -99,3 +99,14 @@ export const loadChatHistory = async (
     onFailed();
   }
 };
+
+export const clearHistory = async (req, onSuccess = ()=>{}, onFailed=()=>{}) =>{
+  try{
+    await api.post("/chat/clearHistory", req);
+    onSuccess();
+  } catch(err: unknown){
+    console.error(err);
+    toast.error("Error clearing chat history");
+    onFailed();
+  }
+}

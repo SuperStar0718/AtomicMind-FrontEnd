@@ -3,8 +3,8 @@ import { FileUploader } from "react-drag-drop-files";
 import "./styles.css";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { uploadFiles } from "@/actions/chat";
-import { SET_CHAT_HISTORY, UPDATE_CHAT_HISTORY } from "@/actions/types";
+import { clearHistory, loadChatHistory, uploadFiles } from "@/actions/chat";
+import { LOAD_CHAT_HISTORY, SET_CHAT_HISTORY, UPDATE_CHAT_HISTORY } from "@/actions/types";
 import { toast } from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import UserImage from "@/assets/images/user.png";
@@ -12,6 +12,7 @@ import BotImage from "@/assets/images/bot.png";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { loadUser } from "@/actions/auth";
+import ClearHistory from "@/assets/images/removeHistory.svg";
 
 const fileTypes = ["PDF", "TXT"];
 /**
@@ -30,6 +31,11 @@ const Content = ({ chat_history, type, name }) => {
 
   const [query, setQuery] = useState("");
 
+  const onClickClearHisotry = () => {
+    dispatch(clearHistory({ id: userData._id, type: type, name: name }, ()=>{
+        dispatch({type:LOAD_CHAT_HISTORY, payload:[]});
+    }));
+  };
   const handleChange = (file: File) => {
     const formData = new FormData();
     formData.append("id", userData._id);
@@ -159,6 +165,9 @@ const Content = ({ chat_history, type, name }) => {
                 </span>
               </span>
             </div>
+            <button className="p-1 rounded hover:bg-gray-100" onClick={onClickClearHisotry}>
+              <img src={ClearHistory} alt="" className="h-[25px] w-[25px]" />
+            </button>
           </div>
           <div
             className="p-splitter p-component p-splitter-horizontal"
