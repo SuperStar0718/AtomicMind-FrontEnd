@@ -11,6 +11,8 @@ import { CreateFolderDialog } from "@/Components/CreateFolderDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import DocumentGroup from "./DocumentGroup";
+import { loadChatHistory } from "@/actions/chat";
+import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT } from "@/actions/types";
 
 export interface IDialogProps {
   enableFolder: boolean;
@@ -35,7 +37,10 @@ export const LeftSidebar = () => {
   };
 
   const onClickChatAllDocument = () => {
-    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'allDocuments', name:''}})
+    dispatch({type:SET_CHAT_CONTEXT, payload:{type:'allDocuments', name:''}})
+    dispatch(loadChatHistory({id:userData._id,type:'allDocuments', name:''}, (res)=>{
+      dispatch({type:LOAD_CHAT_HISTORY, payload:res});
+    }));
   };
 
   const { userData } = useSelector((state: RootState) => state.auth);

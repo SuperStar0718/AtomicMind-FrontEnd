@@ -57,7 +57,7 @@ const Content = ({ chat_history, type, name }) => {
       type: type,
       name: name,
     };
-    if (name == "" || type == "") {
+    if ( type == "") {
       toast.error("Please select a document to chat with you.");
       return;
     }

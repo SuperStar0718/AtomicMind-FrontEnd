@@ -44,7 +44,6 @@ const DocumentItem = ({
     dispatch({type:SET_CHAT_CONTEXT, payload:{type:'document', name:documentName}});
     dispatch(loadChatHistory({id:userData._id,type:'document', name:documentName}, (res)=>{
       dispatch({type:LOAD_CHAT_HISTORY, payload:res});
-    
     }));
   };
 
