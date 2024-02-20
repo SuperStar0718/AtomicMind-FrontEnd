@@ -14,13 +14,17 @@ export const CreateFolderDialog = () => {
   const [fileList, setFileList] = useState<FileList | null>(null);
   const [files, setFiles] = useState<File[] | null>(null);
   const [folderName, setFolderName] = useState<string>("");
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [key, setKey] = useState(Math.random());
 
-  const { userData } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { userData } = useSelector((state: RootState) => state.auth);
 
   const onClickCancel = () => {
+    setFolderName("");
+    setFileList(null);
+    setFiles(null);
+    setKey(Math.random()); // Change the key, causing FileUploader to remount
+
     // Close the modal
     const modal = new Modal(document.getElementById("createFolder"));
     modal.hide();
@@ -31,19 +35,23 @@ export const CreateFolderDialog = () => {
     if (!fileList) {
       return;
     }
-    
+
     // 👇 Create new FormData object and append files
     const data = new FormData();
-    data.append('id', userData._id)
-    data.append('folderName', folderName);
+    data.append("id", userData._id);
+    data.append("folderName", folderName);
     const files = fileList ? [...fileList] : [];
     files.forEach((file, i) => {
       data.append(`file-${i}`, file, file.name);
     });
-    if(dispatch(uploadFiles(data))){
-      onClickCancel();
-      dispatch(loadUser());
-    }
+    dispatch(
+      uploadFiles(data, () => {
+        onClickCancel();
+        dispatch(loadUser());
+        setFolderName("");
+        setFileList(null);
+      })
+    );
   };
 
   const handleChange = (fileList: FileList) => {
@@ -57,16 +65,15 @@ export const CreateFolderDialog = () => {
     const { value } = event.target;
     setFolderName(value);
     validateInput(folderName);
-
   };
 
   const validateInput = (value) => {
     // Example validation: input must not be empty
     if (!value.trim()) {
-      setError('This field is required');
+      setError("This field is required");
       return false;
     }
-    setError('');
+    setError("");
     return true;
   };
 
@@ -102,24 +109,32 @@ export const CreateFolderDialog = () => {
               </svg>
             </button>
           </div>
+
           <div className="px-6">
             <label className="block mb-2 text-sm font-semibold text-gray-700">
               Folder Name
             </label>
             <input
-              className={`w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline ${error? "border-red-500 border " : " border-black" }`}              id="folderName"
+              className={`w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline ${
+                error ? "border-red-500 border " : " border-black"
+              }`}
+              id="folderName"
               type="text"
               placeholder="New Folder"
+              value={folderName}
               onChange={handleInputChange}
               required
             />
             {error && <p className="mt-1 text-xs text-red-500 ">{error}</p>}
           </div>
           <div className="p-6 ">
-            <label className="text-sm font-semibold text-gray-700">File Uploader</label>
+            <label className="text-sm font-semibold text-gray-700">
+              File Uploader
+            </label>
             <div className="space-y-4">
               <div className="flex flex-col items-center justify-center gap-2 py-6 bg-white cursor-pointer rounded-xl hover:bg-slate-50">
                 <FileUploader
+                  key={key}
                   handleChange={handleChange}
                   name="file"
                   types={fileTypes}

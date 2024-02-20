@@ -6,7 +6,8 @@ module.exports = {
     "./src/**/*.{html,ts, tsx,js}",
     "./src/**/**/*.{js,jsx,ts,tsx}",
     "./node_modules/tw-elements-react/dist/js/**/*.js",
-    "./node_modules/flowbite/**/*.js"
+    "./node_modules/flowbite/**/*.js",
+    "./node_modules/react-tailwindcss-select/dist/index.esm.js"
   ],
   plugins: [require("tw-elements-react/dist/plugin.cjs"), require('flowbite/plugin')],
   darkMode: "class"

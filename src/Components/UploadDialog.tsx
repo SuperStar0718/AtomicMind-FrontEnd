@@ -1,35 +1,73 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "flowbite";
 import { FileUploader } from "react-drag-drop-files";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import { uploadFiles } from "@/actions/chat";
+import Select from "react-tailwindcss-select";
+import { loadUser } from "@/actions/auth";
+import { IDialogProps } from "@/Pages/Dashboard/LeftSidebar";
+import toast from "react-hot-toast";
 
 const fileTypes = ["PDF", "TXT"];
-
-export const UploadDialog = () => {
+interface IOption {
+  value: string;
+  label: string;
+}
+export const UploadDialog = ({ enableFolder, folder }: IDialogProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [fileList, setFileList] = useState<FileList | null>(null);
   const [files, setFiles] = useState<File[] | null>(null);
+  const [folderName, setFolderName] = useState<IOption>({} as IOption);
+  const [options, setOptions] = useState<IOption[]>([]);
+  const [showFolder, setShowFolder] = useState(enableFolder);
+  const [key, setKey] = useState(Math.random());
+
+  const { userData } = useSelector((state: RootState) => state.auth);
 
   const onClickCancel = () => {
+    console.log("enableFolder:", enableFolder);
+    setFiles(null);
+    setFileList(null);
+    setKey(Math.random()); // Change the key, causing FileUploader to remount
+
     // Close the modal
     const modal = new Modal(document.getElementById("uploadDocument"));
     modal.hide();
   };
 
+  const onClickToggle = (e) => {
+    setShowFolder(e.target.checked);
+  };
+
+  const folderChangeHandler = (value) => {
+    setFolderName(value);
+    console.log("value:", value);
+  };
   const onClickUpload = () => {
     if (!fileList) {
+      toast.error("Please select  files to upload");
+      return;
+    }
+    if (folderName.value === undefined && showFolder) {
+      toast.error("Please select a folder to upload files");
       return;
     }
     // 👇 Create new FormData object and append files
     const data = new FormData();
+    data.append("id", userData._id);
+    data.append("folderName", folderName.value);
     const files = fileList ? [...fileList] : [];
     files.forEach((file, i) => {
       data.append(`file-${i}`, file, file.name);
     });
-    dispatch(uploadFiles(data));
+    dispatch(
+      uploadFiles(data, () => {
+        dispatch(loadUser());
+        onClickCancel();
+      })
+    );
   };
 
   const handleChange = (fileList: FileList) => {
@@ -38,6 +76,23 @@ export const UploadDialog = () => {
 
     console.log("file:", fileList);
   };
+
+  useEffect(() => {
+    if (userData !== null) {
+      const options = userData.folders.map((folder) => {
+        return { label: folder.folderName, value: folder.folderName };
+      });
+      setOptions(options);
+      setFolderName(options[0]);
+    }
+  }, []);
+
+  useEffect(() => {
+    setShowFolder(enableFolder);
+    setFolderName({ label: folder, value: folder });
+    setFiles(null);
+    console.log("enableFolder:", enableFolder, folder);
+  }, [enableFolder, folder]);
 
   return (
     <div
@@ -71,11 +126,36 @@ export const UploadDialog = () => {
               </svg>
             </button>
           </div>
+          <div className="px-6">
+            <label className="inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showFolder}
+                className="sr-only peer"
+                onChange={onClickToggle}
+              />
+              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#6366f1] rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-[] after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#6366f1]"></div>
+              <span className="text-sm font-medium text-gray-900 ms-3 dark:text-gray-300">
+                Upload to Folder
+              </span>
+            </label>
+            {showFolder && (
+              <div className="select-menu">
+                <Select
+                  value={folderName}
+                  onChange={folderChangeHandler}
+                  options={options}
+                  primaryColor={"#6366f1"}
+                />
+              </div>
+            )}
+          </div>
           <div className="p-6 space-y-6">
             <h2 className="text-gray-900 dark:text-white">File Uploader</h2>
             <div className="space-y-4">
               <div className="flex flex-col items-center justify-center gap-2 bg-white cursor-pointer rounded-xl hover:bg-slate-50 py-14">
                 <FileUploader
+                  key={key}
                   handleChange={handleChange}
                   name="file"
                   types={fileTypes}

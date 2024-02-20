@@ -1,16 +1,51 @@
 import ThreeDot from "@/assets/images/three_dot.svg";
 import { useEffect, useRef } from "react";
-import { Dropdown, Modal } from "flowbite";
+import { Dropdown } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import type { InstanceOptions } from "flowbite";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { deleteDocument, loadChatHistory } from "@/actions/chat";
+import { loadUser } from "@/actions/auth";
+import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT } from "@/actions/types";
 
-const DocumentItem = ({ documentName }) => {
+const DocumentItem = ({
+  documentName,
+  folderName,
+}: {
+  documentName: string;
+  folderName?: string;
+}) => {
+  const { userData } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+
   const dropDownButton = useRef(null);
   const dropDownMenu = useRef(null);
 
-  const onClickCreateFolder = () => {
-    const modal = new Modal(document.getElementById("createFolder"));
-    modal.show();
+  const onClickView = () => {
+    console.log("View");
+  };
+
+  const onClickDelete = () => {
+    const data = {
+      id: userData._id,
+      folderName: folderName,
+      documentName: documentName,
+    };
+    dispatch(
+      deleteDocument(data, () => {
+        console.log("deleted");
+        dispatch(loadUser());
+      })
+    );
+  };
+
+  const onClickDocument = () => {
+    dispatch({type:SET_CHAT_CONTEXT, payload:{type:'document', name:documentName}});
+    dispatch(loadChatHistory({id:userData._id,type:'document', name:documentName}, (res)=>{
+      dispatch({type:LOAD_CHAT_HISTORY, payload:res});
+    
+    }));
   };
 
   useEffect(() => {
@@ -36,7 +71,6 @@ const DocumentItem = ({ documentName }) => {
 
     // instance options object
     const instanceOptions: InstanceOptions = {
-      id: "dropdownMenu",
       override: false,
     };
 
@@ -60,6 +94,7 @@ const DocumentItem = ({ documentName }) => {
         <button
           className="p-button hover:bg-gray-200 p-component p-splitbutton-defaultbutton w-[190px] whitespace-nowrap text-left gap-[7px] pl-[5px] pr-[5px] rounded font-normal"
           type="button"
+          onClick={() => onClickDocument()}
         >
           <span className="p-button-label p-c">{documentName}</span>
         </button>
@@ -71,22 +106,22 @@ const DocumentItem = ({ documentName }) => {
           <img src={ThreeDot} alt="" className=" w-1 py-[7px]" />
         </button>
         <div
-            ref={dropDownMenu}
-            className="z-10 hidden py-1 bg-white divide-y divide-gray-100 rounded-lg [box-shadow:0_2px_12px_0_rgba(0,0,0,.1)] w-44 dark:bg-gray-700"
+          ref={dropDownMenu}
+          className="z-10 hidden py-1 bg-white divide-y divide-gray-100 rounded-lg [box-shadow:0_2px_12px_0_rgba(0,0,0,.1)] w-44 dark:bg-gray-700"
+        >
+          <div
+            className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
+            onClick={() => onClickView()}
           >
-            <div
-              className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickCreateFolder()}
-            >
-             View
-            </div>
-            <div
-              className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickCreateFolder()}
-            >
-             Delete
-            </div>
+            View
           </div>
+          <div
+            className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
+            onClick={() => onClickDelete()}
+          >
+            Delete
+          </div>
+        </div>
       </div>
     </div>
   );

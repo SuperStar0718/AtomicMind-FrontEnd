@@ -1,34 +1,55 @@
 import ThreeDot from "@/assets/images/three_dot.svg";
 import RightArrow from "@/assets/images/right_arrow.svg";
 import { useEffect, useRef, useState } from "react";
-import { Dropdown,Modal } from "flowbite";
+import { Dropdown, Modal } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import type { InstanceOptions } from "flowbite";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { deleteFolder } from "@/actions/chat";
+import { loadUser } from "@/actions/auth";
 
-
-export const FolderItem = ({ folderName, children }) => {
+export const FolderItem = ({ folderName,setDialogOption, children }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { userData } = useSelector((state: RootState) => state.auth);
   const [opened, setOpened] = useState(false);
 
   const dropDownButton = useRef(null);
   const dropDownMenu = useRef(null);
-  
-  const onClickCreateFolder = () => {
-    const modal = new Modal(document.getElementById("createFolder"));
-    modal.show();
+
+  const onClickDelete = () => {
+    const data = {
+      id: userData._id,
+      folderName: folderName,
+    };
+    dispatch(deleteFolder(data,()=>{
+      console.log('deleted')
+      dispatch(loadUser())
+    }));
+  };
+
+  const onClickFolderItem = () => {
+    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'folder', name:folderName}});
   }
+
+  const onClickAddDocuments = () => {
+    setDialogOption({enableFolder:true, folder:folderName})
+    const modal = new Modal(document.getElementById("uploadDocument"));
+    modal.show();
+  };
 
   useEffect(() => {
     // set the dropdown menu element
-    const $targetEl: HTMLElement = dropDownMenu.current
+    const $targetEl: HTMLElement = dropDownMenu.current;
 
     // set the element that trigger the dropdown menu on click
-    const $triggerEl: HTMLElement = dropDownButton.current
+    const $triggerEl: HTMLElement = dropDownButton.current;
 
-     // Ensure elements are not null
-  if (!$targetEl || !$triggerEl) {
-    console.error('Elements not found');
-    return;
-  }
+    // Ensure elements are not null
+    if (!$targetEl || !$triggerEl) {
+      console.error("Elements not found");
+      return;
+    }
 
     // options with default values
     const options: DropdownOptions = {
@@ -40,7 +61,6 @@ export const FolderItem = ({ folderName, children }) => {
 
     // instance options object
     const instanceOptions: InstanceOptions = {
-      id: "dropdownMenu",
       override: false,
     };
 
@@ -58,7 +78,7 @@ export const FolderItem = ({ folderName, children }) => {
       instanceOptions
     );
   }, []);
-  
+
   return (
     <>
       <div className="flex items-center w-full">
@@ -69,7 +89,9 @@ export const FolderItem = ({ folderName, children }) => {
           <img
             src={RightArrow}
             alt=""
-            className={`h-[14px] w-[14px] transition-all ease-in-out duration-75 ${opened ? "" : "-rotate-90"}`}
+            className={`h-[14px] w-[14px] transition-all ease-in-out duration-75 ${
+              opened ? "" : "-rotate-90"
+            }`}
           />
         </button>
         <div
@@ -82,7 +104,7 @@ export const FolderItem = ({ folderName, children }) => {
           <button
             aria-label="zxcv"
             className="p-button hover:bg-gray-100 rounded p-component p-splitbutton-defaultbutton w-[190px] whitespace-nowrap text-left gap-[7px] pl-[5px] pr-[5px] font-normal"
-            onClick={() => setOpened(!opened)}
+            onClick={() => onClickFolderItem()}
           >
             <span className="p-button-label p-c" data-pc-section="label">
               {folderName}
@@ -105,15 +127,15 @@ export const FolderItem = ({ folderName, children }) => {
           >
             <div
               className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickCreateFolder()}
+              onClick={() => onClickAddDocuments()}
             >
-             Add Documents
+              Add Documents
             </div>
             <div
               className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickCreateFolder()}
+              onClick={() => onClickDelete()}
             >
-             Delete
+              Delete
             </div>
           </div>
         </div>

@@ -6,22 +6,53 @@ import DocumentItem from "./DocumentItem";
 
 import UploadImage from "@/assets/images/upload.svg";
 import ChatIcon from "@/assets/images/chatIcon.svg";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CreateFolderDialog } from "@/Components/CreateFolderDialog";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import DocumentGroup from "./DocumentGroup";
+
+export interface IDialogProps {
+  enableFolder: boolean;
+  folder?: string;
+}
+
+interface IDocumentItem {
+  documentName: string;
+  folderName?: string;
+}
 
 export const LeftSidebar = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  const [documents, setDocuments] = useState<IDocumentItem[]>([]);
+  const [dialogProps, setDialogProps] = useState<IDialogProps>({
+    enableFolder: false,
+  });
   const uploadDocument = () => {
+    setDialogProps({ enableFolder: false });
     const modal = new Modal(document.getElementById("uploadDocument"));
     modal.show();
+  };
+
+  const onClickChatAllDocument = () => {
+    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'allDocuments', name:''}})
   };
 
   const { userData } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    console.log("hello");
-  }, []);
+    const allDocuments:IDocumentItem[] = [];
+    if (userData === null) return;
+    userData.folders?.forEach((folder) => {
+      folder.documents?.forEach((document) => {
+        allDocuments.push({documentName:document, folderName:folder.folderName});
+      });
+    });
+    userData.documents?.forEach((document) => {
+      allDocuments.push({documentName:document});
+    });
+    setDocuments(allDocuments);
+  }, [userData]);
 
   return (
     <>
@@ -51,8 +82,7 @@ export const LeftSidebar = () => {
               <button
                 aria-label="Chat with All Documents"
                 className="items-center bg-[#6366f1] text-white cursor-pointer  h-[35px] flex justify-between py-[0.65625rem] px-[1.09375rem]  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
-                data-pc-name="button"
-                data-pc-section="root"
+               onClick={()=>onClickChatAllDocument()}
               >
                 <img src={ChatIcon} alt="" className="w-[14px] h-[14px]" />
                 <span
@@ -63,104 +93,31 @@ export const LeftSidebar = () => {
                 </span>
               </button>
             </div>
-            <div className="flex flex-col gap-2 overflow-auto grow">
+            <div className="flex flex-col overflow-auto grow">
               <FolderGroup>
                 {userData?.folders?.map((folder, index) => (
-                  <FolderItem key={index} folderName = {folder.folderName}>
+                  <FolderItem
+                    key={index}
+                    folderName={folder.folderName}
+                    setDialogOption={setDialogProps}
+                  >
                     {folder.documents?.map((document, index) => {
-                        return <DocumentItem key={index} documentName={document} />;
+                      return (
+                        <DocumentItem
+                          key={index}
+                          documentName={document}
+                          folderName={folder.folderName}
+                        />
+                      );
                     })}
                   </FolderItem>
                 ))}
               </FolderGroup>
-              <div>
-                <div className="flex items-center w-full">
-                  <button
-                    className="p-button h-[32px] w-[32px] pl-[5px] pr-[5px] p-component p-button-icon-only p-button-text p-button-sm p-button-secondary"
-                    data-pc-name="button"
-                    data-pc-section="root"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      focusable="false"
-                      data-prefix="fas"
-                      data-icon="chevron-right"
-                      className="svg-inline--fa fa-chevron-right "
-                      role="img"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 384 512"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
-                      ></path>
-                    </svg>
-                    <span className="p-button-label p-c">&nbsp;</span>
-                  </button>
-                  <div
-                    className="p-splitbutton p-component h-[32px] w-full p-button-secondary p-button-text p-button-sm"
-                    title="All Documents"
-                    data-pc-name="splitbutton"
-                    data-pc-section="root"
-                    id="pr_id_4"
-                  >
-                    <button
-                      aria-label="All Documents"
-                      className="p-button text-left gap-[7px] pl-[5px] pr-[5px] rounded-[3px] font-normal text-[rgb(49,_54,_57)] p-component p-splitbutton-defaultbutton w-[190px] whitespace-nowrap"
-                      type="button"
-                      data-pc-name="button"
-                      data-pc-section="root"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        focusable="false"
-                        data-prefix="fas"
-                        data-icon="file"
-                        className="svg-inline--fa fa-file "
-                        role="img"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
-                        ></path>
-                      </svg>
-                      <span
-                        className="p-button-label p-c"
-                        data-pc-section="label"
-                      >
-                        All Documents
-                      </span>
-                    </button>
-                    <button
-                      className="p-button p-component p-splitbutton-menubutton pl-[5px] pr-[5px] w-[30px] rounded-[3px] p-button-icon-only"
-                      type="button"
-                      aria-expanded="false"
-                      aria-haspopup="true"
-                      data-pc-name="button"
-                      data-pc-section="root"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        focusable="false"
-                        data-prefix="fas"
-                        data-icon="ellipsis-vertical"
-                        className="svg-inline--fa fa-ellipsis-vertical "
-                        role="img"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 128 512"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M64 360c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zm0-160c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zM120 96c0 30.9-25.1 56-56 56S8 126.9 8 96S33.1 40 64 40s56 25.1 56 56z"
-                        ></path>
-                      </svg>
-                      <span className="p-button-label p-c">&nbsp;</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <DocumentGroup>
+                {documents.map((document, index) => {
+                  return <DocumentItem key={index} documentName={document.documentName} folderName={document.folderName} />;
+                })}
+              </DocumentGroup>
             </div>
           </div>
         </aside>
@@ -189,7 +146,7 @@ export const LeftSidebar = () => {
           </button>
         </nav>
       </div>
-      <UploadDialog />
+      <UploadDialog {...dialogProps} />
       <CreateFolderDialog />
     </>
   );
