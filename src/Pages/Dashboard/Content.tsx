@@ -4,7 +4,7 @@ import "./styles.css";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { uploadFiles } from "@/actions/chat";
-import { SET_CHAT_HISTORY, UPDATE_CHAT_HISTORY} from "@/actions/types";
+import { SET_CHAT_HISTORY, UPDATE_CHAT_HISTORY } from "@/actions/types";
 import { toast } from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import UserImage from "@/assets/images/user.png";
@@ -27,7 +27,6 @@ const Content = ({ chat_history, type, name }) => {
   const { userData } = useSelector((state: RootState) => state.auth);
 
   const dispatch = useDispatch<AppDispatch>();
-  
 
   const [query, setQuery] = useState("");
 
@@ -46,7 +45,7 @@ const Content = ({ chat_history, type, name }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const req : {id:string,prompt:Message, type:string, name:string} = {
+    const req: { id: string; prompt: IMessage; type: string; name: string } = {
       id: userData._id,
       prompt: { role: "user", content: query },
       type: type,
@@ -209,8 +208,7 @@ const Content = ({ chat_history, type, name }) => {
                         </div>
                       );
                     })
-                  ) : (
-                    name == "" ? (
+                  ) : name == "" ? (
                     <div className="flex items-center justify-center h-full ">
                       <FileUploader
                         handleChange={handleChange}
@@ -218,12 +216,12 @@ const Content = ({ chat_history, type, name }) => {
                         types={fileTypes}
                         dropMessageStyle={{ backgroundColor: "red" }}
                       />
-                    </div>) : (
-                      <div className="flex flex-col items-center justify-center h-full ">
-                        <h2 className="text-black">AtomicMind</h2>
-                        <p>Start conversation with this Folder</p>
-                      </div>
-                    )
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full ">
+                      <h2 className="text-black">AtomicMind</h2>
+                      <p>Start conversation with this Folder</p>
+                    </div>
                   )}
                 </ScrollToBottom>
 

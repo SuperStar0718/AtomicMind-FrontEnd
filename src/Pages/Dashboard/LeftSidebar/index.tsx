@@ -11,7 +11,6 @@ import { CreateFolderDialog } from "@/Components/CreateFolderDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import DocumentGroup from "./DocumentGroup";
-import { set } from "react-hook-form";
 
 export interface IDialogProps {
   enableFolder: boolean;
