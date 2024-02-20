@@ -28,6 +28,10 @@ export const FolderItem = ({ folderName,setDialogOption, children }) => {
     }));
   };
 
+  const onClickFolderItem = () => {
+    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'folder', name:folderName}});
+  }
+
   const onClickAddDocuments = () => {
     setDialogOption({enableFolder:true, folder:folderName})
     const modal = new Modal(document.getElementById("uploadDocument"));
@@ -100,7 +104,7 @@ export const FolderItem = ({ folderName,setDialogOption, children }) => {
           <button
             aria-label="zxcv"
             className="p-button hover:bg-gray-100 rounded p-component p-splitbutton-defaultbutton w-[190px] whitespace-nowrap text-left gap-[7px] pl-[5px] pr-[5px] font-normal"
-            onClick={() => setOpened(!opened)}
+            onClick={() => onClickFolderItem()}
           >
             <span className="p-button-label p-c" data-pc-section="label">
               {folderName}

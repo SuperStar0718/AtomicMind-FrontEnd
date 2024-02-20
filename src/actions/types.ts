@@ -9,6 +9,10 @@ export const GET_RESPONSE: string = 'GET_RESPONSE';
 export const SET_QUERY: string = 'SET_QUERY';
 export const UPLOAD_FILE: string = 'UPLOAD_FILE';
 
+export const SET_CHAT_CONTEXT: string = 'SET_CHAT_CONTEXT';
+export const SET_CHAT_HISTORY: string = 'SET_CHAT_HISTORY';
+export const UPDATE_CHAT_HISTORY: string = 'UPDATE_CHAT_HISTORY';
+
 
 export const SET_ALERT: string = 'SET_ALERT';
 export const REMOVE_ALERT: string = 'REMOVE_ALERT';

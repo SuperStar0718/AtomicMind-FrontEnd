@@ -13,8 +13,8 @@ const DocumentGroup = ({ children }) => {
   const folderDropDownButton = useRef(null);
   const folderDropDownMenu = useRef(null);
 
-  const onClickCreateFolder = () => {
-    const modal = new Modal(document.getElementById("createFolder"));
+  const onClickUploadDocument = () => {
+    const modal = new Modal(document.getElementById("uploadDocument"));
     modal.show();
   };
 
@@ -106,7 +106,7 @@ const DocumentGroup = ({ children }) => {
           >
             <div
               className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={() => onClickCreateFolder()}
+              onClick={() => onClickUploadDocument()}
             >
               Upload Documents
             </div>
@@ -122,7 +122,7 @@ const DocumentGroup = ({ children }) => {
               <p className="text-sm text-gray-500">No Documents</p>
               <button
                 className="items-center bg-[#6366f1] text-white cursor-pointer text-sm   flex justify-between p-2  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
-                onClick={onClickCreateFolder}
+                onClick={onClickUploadDocument}
               >
                 Upload
               </button>

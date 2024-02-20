@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import "./styles.css";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import { uploadFiles } from "@/actions/chat";
-import { SET_QUERY } from "@/actions/types";
+import { SET_CHAT_HISTORY, UPDATE_CHAT_HISTORY} from "@/actions/types";
 import { toast } from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import UserImage from "@/assets/images/user.png";
 import BotImage from "@/assets/images/bot.png";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { loadUser } from "@/actions/auth";
 
 const fileTypes = ["PDF", "TXT"];
 /**
@@ -21,108 +22,104 @@ interface Message {
   content: string;
 }
 
-export const Content = () => {
+const Content = ({ chat_history, type, name }) => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
+  const { userData } = useSelector((state: RootState) => state.auth);
 
   const dispatch = useDispatch<AppDispatch>();
-  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  
 
   const [query, setQuery] = useState("");
-  const [file, setFile] = useState<File>(null);
 
   const handleChange = (file: File) => {
-    console.log("file:", file);
-    setFile(file);
     const formData = new FormData();
+    formData.append("id", userData._id);
     formData.append("file", file);
     formData.append("fileName", file.name);
-    dispatch(uploadFiles(formData));
+    dispatch(
+      uploadFiles(formData, () => {
+        dispatch(loadUser());
+      })
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const req = {
-      prompt: query,
-      file: file?.name,
+    const req : {id:string,prompt:Message, type:string, name:string} = {
+      id: userData._id,
+      prompt: { role: "user", content: query },
+      type: type,
+      name: name,
     };
-    if (!file) {
-      toast.error("Please upload a file");
-    } else {
-      dispatch({ type: SET_QUERY, payload: { question: query } });
+    if (name == "" || type == "") {
+      toast.error("Please select a document to chat with you.");
+      return;
+    }
+    dispatch({ type: SET_CHAT_HISTORY, payload: req.prompt });
 
-      const userInput: Message = { role: "user", content: query };
-      setQuery("");
+    setQuery("");
 
-      const updatedChatHistory = [...chatHistory, userInput];
-      setChatHistory(updatedChatHistory);
-      // dispatch(generateResponse(req));
-      const response = await fetch(baseURL + "api/chat/generateResponse", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(req),
-      });
-      const reader = response.body.getReader();
-      setChatHistory((prevChatHistory) => [
-        ...prevChatHistory,
-        { role: "assistant", content: "" },
-      ]);
-      let receivedText = "";
-      const stream = new ReadableStream({
-        async start(controller) {
-          // eslint-disable-next-line no-constant-condition
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            // Convert the Uint8Array to a string
-            receivedText += new TextDecoder("utf-8").decode(value);
-            // Process each message (assuming messages are separated by double newlines)
-            const parts = receivedText.split("\n\n");
-            receivedText = parts.pop(); // Last part might be incomplete; keep it for next round
+    // dispatch(generateResponse(req));
+    const response = await fetch(baseURL + "api/chat/generateResponse", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(req),
+    });
+    const reader = response.body.getReader();
 
-            parts.forEach((part) => {
-              const match = part.match(/^data: (.*)$/);
-              if (match) {
-                // Remove quote symbols from start and end of the string
-                const messageWithoutQuotes = match[1]
-                  .trim()
-                  .replace(/^"|"$/g, "");
-                controller.enqueue(messageWithoutQuotes);
-              }
-            });
-          }
-          controller.close();
-          reader.releaseLock();
-        },
-      });
-      const streamReader = stream.getReader();
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await streamReader.read();
-        if (done) {
-          reader.releaseLock();
-          break;
+    dispatch({
+      type: SET_CHAT_HISTORY,
+      payload: { role: "assistant", content: "" },
+    });
+
+    let receivedText = "";
+    const stream = new ReadableStream({
+      async start(controller) {
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          // Convert the Uint8Array to a string
+          receivedText += new TextDecoder("utf-8").decode(value);
+          // Process each message (assuming messages are separated by double newlines)
+          const parts = receivedText.split("\n\n");
+          receivedText = parts.pop(); // Last part might be incomplete; keep it for next round
+
+          parts.forEach((part) => {
+            const match = part.match(/^data: (.*)$/);
+            if (match) {
+              // Remove quote symbols from start and end of the string
+              const messageWithoutQuotes = match[1]
+                .trim()
+                .replace(/^"|"$/g, "");
+              controller.enqueue(messageWithoutQuotes);
+            }
+          });
         }
-        const text = value
-          .replace(/\\n/g, "\n")
-          .replace(/```$/, "")
-          .replace("markdown", "");
-          console.log("text:", text);
-        setChatHistory((prev) => {
-          // If there are messages, update the last one
-          return prev.map(
-            (msg, index) =>
-              index === prev.length - 1
-                ? { ...msg, content: msg.content + text } // Update the last message
-                : msg // Keep all other messages unchanged
-          );
-        });
+        controller.close();
+        reader.releaseLock();
+      },
+    });
+    const streamReader = stream.getReader();
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { done, value } = await streamReader.read();
+      if (done) {
+        reader.releaseLock();
+        break;
       }
+      const text = value
+        .replace(/\\n/g, "\n")
+        .replace(/```$/, "")
+        .replace("markdown", "");
+      console.log("text:", text);
+
+      dispatch({ type: UPDATE_CHAT_HISTORY, payload: text });
     }
   };
- 
 
   return (
     <>
@@ -155,7 +152,11 @@ export const Content = () => {
                   className="flex items-center justify-center w-full h-full text-xs center text-"
                   data-pc-section="value"
                 >
-                  {file && file.name ? file.name : "No File"}
+                  {name
+                    ? name
+                    : type == "allDocuments"
+                    ? "All Documents"
+                    : "No File"}
                 </span>
               </span>
             </div>
@@ -173,8 +174,8 @@ export const Content = () => {
             >
               <div className="overflow-auto flex flex-col md:h-[calc(100vh-48px)] h-[calc(100vh-96px)] justify-between">
                 <ScrollToBottom className="h-full overflow-auto">
-                  {chatHistory.length > 0 ? (
-                    chatHistory.map((chat, index) => {
+                  {chat_history.length > 0 ? (
+                    chat_history.map((chat, index) => {
                       return (
                         <div
                           key={index}
@@ -192,7 +193,7 @@ export const Content = () => {
                             />
                           </div>
                           <div
-                            className={`min-h-[50px] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 p-4 ${
+                            className={`min-h-[50px] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 px-4 ${
                               chat.role == "user"
                                 ? "bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl"
                                 : "bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl"
@@ -270,3 +271,13 @@ export const Content = () => {
     </>
   );
 };
+
+const mapStateToProps = (state: RootState) => ({
+  chat_history: state.chat.chat_history,
+  type: state.chat.type,
+  name: state.chat.name,
+});
+
+const ConnectedContent = connect(mapStateToProps)(Content);
+
+export default ConnectedContent;

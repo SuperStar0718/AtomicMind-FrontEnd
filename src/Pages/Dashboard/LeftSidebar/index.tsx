@@ -8,8 +8,8 @@ import UploadImage from "@/assets/images/upload.svg";
 import ChatIcon from "@/assets/images/chatIcon.svg";
 import { useEffect, useState } from "react";
 import { CreateFolderDialog } from "@/Components/CreateFolderDialog";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import DocumentGroup from "./DocumentGroup";
 import { set } from "react-hook-form";
 
@@ -24,6 +24,7 @@ interface IDocumentItem {
 }
 
 export const LeftSidebar = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const [documents, setDocuments] = useState<IDocumentItem[]>([]);
   const [dialogProps, setDialogProps] = useState<IDialogProps>({
     enableFolder: false,
@@ -32,6 +33,10 @@ export const LeftSidebar = () => {
     setDialogProps({ enableFolder: false });
     const modal = new Modal(document.getElementById("uploadDocument"));
     modal.show();
+  };
+
+  const onClickChatAllDocument = () => {
+    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'allDocuments', name:''}})
   };
 
   const { userData } = useSelector((state: RootState) => state.auth);
@@ -78,8 +83,7 @@ export const LeftSidebar = () => {
               <button
                 aria-label="Chat with All Documents"
                 className="items-center bg-[#6366f1] text-white cursor-pointer  h-[35px] flex justify-between py-[0.65625rem] px-[1.09375rem]  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
-                data-pc-name="button"
-                data-pc-section="root"
+               onClick={()=>onClickChatAllDocument()}
               >
                 <img src={ChatIcon} alt="" className="w-[14px] h-[14px]" />
                 <span

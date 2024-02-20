@@ -50,7 +50,7 @@ export const UploadDialog = ({ enableFolder, folder }: IDialogProps) => {
       toast.error("Please select  files to upload");
       return;
     }
-    if (folderName.value === undefined) {
+    if (folderName.value === undefined && showFolder) {
       toast.error("Please select a folder to upload files");
       return;
     }

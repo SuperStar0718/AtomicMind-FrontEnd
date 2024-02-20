@@ -1,11 +1,24 @@
-import { GET_RESPONSE, SET_QUERY } from "../actions/types";
+import {
+  GET_RESPONSE,
+  SET_CHAT_CONTEXT,
+  SET_CHAT_HISTORY,
+  SET_QUERY,
+  UPDATE_CHAT_HISTORY,
+} from "../actions/types";
 
 interface IHistory {
-  question?: string;
-  answer?: string;
+  role?: string;
+  content?: string;
 }
-const initialState: { chat_history: IHistory[] } = {
+interface IChat {
+  chat_history: IHistory[];
+  type: string;
+  name: string;
+}
+const initialState: IChat = {
   chat_history: [],
+  type: "",
+  name: "",
 };
 
 function chatReducer(state = initialState, action: any) {
@@ -17,7 +30,27 @@ function chatReducer(state = initialState, action: any) {
         ...state,
         chat_history: [...state.chat_history, payload],
       };
-
+    case SET_CHAT_HISTORY:
+      return {
+        ...state,
+        chat_history: [...state.chat_history, payload],
+      };
+    case UPDATE_CHAT_HISTORY:
+      return {
+        ...state,
+        chat_history: state.chat_history.map(
+          (msg, index) =>
+            index === state.chat_history.length - 1
+              ? { ...msg, content: msg.content + payload } // Update the last message
+              : msg // Keep all other messages unchanged
+        ),
+      };
+    case SET_CHAT_CONTEXT:
+      return {
+        ...state,
+        type: payload.type,
+        name: payload.name,
+      };
     default:
       return state;
   }

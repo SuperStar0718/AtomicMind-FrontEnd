@@ -8,7 +8,13 @@ import { AppDispatch, RootState } from "@/store";
 import { deleteDocument } from "@/actions/chat";
 import { loadUser } from "@/actions/auth";
 
-const DocumentItem = ({ documentName, folderName }: {documentName:string, folderName?:string}) => {
+const DocumentItem = ({
+  documentName,
+  folderName,
+}: {
+  documentName: string;
+  folderName?: string;
+}) => {
   const { userData } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -16,8 +22,8 @@ const DocumentItem = ({ documentName, folderName }: {documentName:string, folder
   const dropDownMenu = useRef(null);
 
   const onClickView = () => {
-    console.log('View')
-  }
+    console.log("View");
+  };
 
   const onClickDelete = () => {
     const data = {
@@ -25,11 +31,17 @@ const DocumentItem = ({ documentName, folderName }: {documentName:string, folder
       folderName: folderName,
       documentName: documentName,
     };
-    dispatch(deleteDocument(data,()=>{
-      console.log('deleted')
-      dispatch(loadUser())
-    }));
-  }
+    dispatch(
+      deleteDocument(data, () => {
+        console.log("deleted");
+        dispatch(loadUser());
+      })
+    );
+  };
+
+  const onClickDocument = () => {
+    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'document', name:documentName}});
+  };
 
   useEffect(() => {
     // set the dropdown menu element
@@ -77,6 +89,7 @@ const DocumentItem = ({ documentName, folderName }: {documentName:string, folder
         <button
           className="p-button hover:bg-gray-200 p-component p-splitbutton-defaultbutton w-[190px] whitespace-nowrap text-left gap-[7px] pl-[5px] pr-[5px] rounded font-normal"
           type="button"
+          onClick={() => onClickDocument()}
         >
           <span className="p-button-label p-c">{documentName}</span>
         </button>
@@ -88,22 +101,22 @@ const DocumentItem = ({ documentName, folderName }: {documentName:string, folder
           <img src={ThreeDot} alt="" className=" w-1 py-[7px]" />
         </button>
         <div
-            ref={dropDownMenu}
-            className="z-10 hidden py-1 bg-white divide-y divide-gray-100 rounded-lg [box-shadow:0_2px_12px_0_rgba(0,0,0,.1)] w-44 dark:bg-gray-700"
+          ref={dropDownMenu}
+          className="z-10 hidden py-1 bg-white divide-y divide-gray-100 rounded-lg [box-shadow:0_2px_12px_0_rgba(0,0,0,.1)] w-44 dark:bg-gray-700"
+        >
+          <div
+            className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
+            onClick={() => onClickView()}
           >
-            <div
-              className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickView()}
-            >
-             View
-            </div>
-            <div
-              className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-              onClick={()=> onClickDelete()}
-            >
-             Delete
-            </div>
+            View
           </div>
+          <div
+            className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
+            onClick={() => onClickDelete()}
+          >
+            Delete
+          </div>
+        </div>
       </div>
     </div>
   );
