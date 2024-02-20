@@ -17,7 +17,7 @@ const fileTypes = ["PDF", "TXT"];
 /**
  * Represents a message in the chat.
  */
-interface Message {
+export interface IMessage {
   role: "user" | "assistant" | "system";
   content: string;
 }
@@ -210,6 +210,7 @@ const Content = ({ chat_history, type, name }) => {
                       );
                     })
                   ) : (
+                    name == "" ? (
                     <div className="flex items-center justify-center h-full ">
                       <FileUploader
                         handleChange={handleChange}
@@ -217,7 +218,12 @@ const Content = ({ chat_history, type, name }) => {
                         types={fileTypes}
                         dropMessageStyle={{ backgroundColor: "red" }}
                       />
-                    </div>
+                    </div>) : (
+                      <div className="flex flex-col items-center justify-center h-full ">
+                        <h2 className="text-black">AtomicMind</h2>
+                        <p>Start conversation with this Folder</p>
+                      </div>
+                    )
                   )}
                 </ScrollToBottom>
 

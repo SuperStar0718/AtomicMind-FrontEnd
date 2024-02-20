@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import api from "../utils/api";
 import { AppDispatch } from "@/store";
 import { loadUser } from "./auth";
+import { IMessage } from "@/Pages/Dashboard/Content";
 
 const baseURL = import.meta.env.VITE_BACKEND_API || "";
 
@@ -46,7 +47,7 @@ export const deleteFolder =
 
 export const deleteDocument =
   (
-    data: { id: string, folderName:string, documentName: string },
+    data: { id: string; folderName: string; documentName: string },
     onSuccess = () => {},
     onFailed = () => {}
   ) =>
@@ -84,4 +85,17 @@ export const generateResponse = (req) => {
   };
 };
 
-
+export const loadChatHistory = async (
+  req,
+  onSuccess = (response:IMessage[]) => {},
+  onFailed = () => {}
+) => {
+  try {
+    const res = await api.post("/chat/loadChatHistory", req);
+    onSuccess(res.data);
+  } catch (err: unknown) {
+    console.error(err);
+    toast.error("Error loading chat history");
+    onFailed();
+  }
+};

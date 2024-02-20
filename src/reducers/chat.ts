@@ -1,5 +1,6 @@
 import {
   GET_RESPONSE,
+  LOAD_CHAT_HISTORY,
   SET_CHAT_CONTEXT,
   SET_CHAT_HISTORY,
   SET_QUERY,
@@ -50,6 +51,11 @@ function chatReducer(state = initialState, action: any) {
         ...state,
         type: payload.type,
         name: payload.name,
+      };
+    case LOAD_CHAT_HISTORY:
+      return {
+        ...state,
+        chat_history: payload,
       };
     default:
       return state;

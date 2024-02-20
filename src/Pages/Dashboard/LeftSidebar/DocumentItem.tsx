@@ -5,8 +5,9 @@ import type { DropdownOptions, DropdownInterface } from "flowbite";
 import type { InstanceOptions } from "flowbite";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { deleteDocument } from "@/actions/chat";
+import { deleteDocument, loadChatHistory } from "@/actions/chat";
 import { loadUser } from "@/actions/auth";
+import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT } from "@/actions/types";
 
 const DocumentItem = ({
   documentName,
@@ -40,7 +41,11 @@ const DocumentItem = ({
   };
 
   const onClickDocument = () => {
-    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'document', name:documentName}});
+    dispatch({type:SET_CHAT_CONTEXT, payload:{type:'document', name:documentName}});
+    dispatch(loadChatHistory({id:userData._id,type:'document', name:documentName}, (res)=>{
+      dispatch({type:LOAD_CHAT_HISTORY, payload:res});
+    
+    }));
   };
 
   useEffect(() => {
