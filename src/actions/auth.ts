@@ -8,6 +8,7 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
+  LOGOUT,
 } from "./types";
 import { AppDispatch } from "@/store";
 
@@ -40,6 +41,17 @@ export const registerAction =
       });
     }
   };
+
+  export const logoutAction = () => async (dispatch: AppDispatch) => {
+    try{
+      dispatch({
+        type: LOGOUT,
+      });
+    }
+    catch(err){
+      console.error(err);
+    }
+  }
 
 
   export const loginAction = (formData: RegisterType) => async (dispatch: AppDispatch) => {

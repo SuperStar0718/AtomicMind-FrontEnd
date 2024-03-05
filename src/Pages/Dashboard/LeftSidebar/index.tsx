@@ -1,13 +1,13 @@
 import { Modal } from "flowbite";
-import { UploadDialog } from "@/Components/UploadDialog";
+import { UploadDialog } from "@/Components/Modal/UploadDialog";
 import FolderGroup from "./FolderGroup";
 import { FolderItem } from "./FolderItem";
 import DocumentItem from "./DocumentItem";
-
+import { MoveToFolderDialog } from "@/Components/Modal/MoveToFolderDialog";
 import UploadImage from "@/assets/images/upload.svg";
 import ChatIcon from "@/assets/images/chatIcon.svg";
 import { useEffect, useState } from "react";
-import { CreateFolderDialog } from "@/Components/CreateFolderDialog";
+import { CreateFolderDialog } from "@/Components/Modal/CreateFolderDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import DocumentGroup from "./DocumentGroup";

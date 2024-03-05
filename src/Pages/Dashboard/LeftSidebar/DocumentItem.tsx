@@ -1,5 +1,5 @@
 import ThreeDot from "@/assets/images/three_dot.svg";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dropdown } from "flowbite";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import type { InstanceOptions } from "flowbite";
@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "@/store";
 import { deleteDocument, loadChatHistory } from "@/actions/chat";
 import { loadUser } from "@/actions/auth";
 import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT } from "@/actions/types";
+import { MoveToFolderDialog } from "@/Components/Modal/MoveToFolderDialog";
 
 const DocumentItem = ({
   documentName,
@@ -18,13 +19,16 @@ const DocumentItem = ({
 }) => {
   const { userData } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
-
+  const [openModal, setOpenModal] = useState(true);
+  
   const dropDownButton = useRef(null);
   const dropDownMenu = useRef(null);
 
   const onClickView = () => {
-    console.log("View");
+    console.log("View:", folderName);
   };
+
+
 
   const onClickDelete = () => {
     const data = {
@@ -41,10 +45,19 @@ const DocumentItem = ({
   };
 
   const onClickDocument = () => {
-    dispatch({type:SET_CHAT_CONTEXT, payload:{type:'document', name:documentName}});
-    dispatch(loadChatHistory({id:userData._id,type:'document', name:documentName}, (res)=>{
-      dispatch({type:LOAD_CHAT_HISTORY, payload:res});
-    }));
+    dispatch({
+      type: SET_CHAT_CONTEXT,
+      payload: { type: "document", name: documentName },
+    });
+
+    dispatch(
+      loadChatHistory(
+        { id: userData._id, type: "document", name: documentName },
+        (res) => {
+          dispatch({ type: LOAD_CHAT_HISTORY, payload: res });
+        }
+      )
+    );
   };
 
   useEffect(() => {
@@ -114,6 +127,17 @@ const DocumentItem = ({
           >
             View
           </div>
+          {!folderName && (
+            <>
+              <div
+                className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
+                onClick={() => setOpenModal(true)}
+              >
+                Move to Folder
+              </div>
+              <MoveToFolderDialog show={openModal} setOpenModal={setOpenModal} />
+            </>
+          )}
           <div
             className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
             onClick={() => onClickDelete()}

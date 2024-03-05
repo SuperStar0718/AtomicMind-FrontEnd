@@ -110,3 +110,14 @@ export const clearHistory = async (req, onSuccess = ()=>{}, onFailed=()=>{}) =>{
     onFailed();
   }
 }
+
+export const moveToFolder = async (req, onSuccess = ()=>{}, onFailed=()=>{}) =>{
+  try{
+    await api.post("/chat/moveToFolder", req);
+    onSuccess();
+  } catch(err: unknown){
+    console.error(err);
+    toast.error("Error moving document to folder");
+    onFailed();
+  }
+}
