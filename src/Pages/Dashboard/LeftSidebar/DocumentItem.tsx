@@ -19,7 +19,7 @@ const DocumentItem = ({
 }) => {
   const { userData } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
-  const [openModal, setOpenModal] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
   
   const dropDownButton = useRef(null);
   const dropDownMenu = useRef(null);
@@ -135,7 +135,6 @@ const DocumentItem = ({
               >
                 Move to Folder
               </div>
-              <MoveToFolderDialog show={openModal} setOpenModal={setOpenModal} />
             </>
           )}
           <div
@@ -146,6 +145,8 @@ const DocumentItem = ({
           </div>
         </div>
       </div>
+      <MoveToFolderDialog  show={openModal} setOpenModal={setOpenModal} documentName={documentName} />
+
     </div>
   );
 };
