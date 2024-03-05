@@ -2,7 +2,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import api from "../utils/api";
 import { AppDispatch } from "@/store";
-import { loadUser } from "./auth";
 import { IMessage } from "@/Pages/Dashboard/Content";
 
 const baseURL = import.meta.env.VITE_BACKEND_API || "";
@@ -85,39 +84,43 @@ export const generateResponse = (req) => {
   };
 };
 
-export const loadChatHistory = async (
+export const loadChatHistory =
+  (req, onSuccess = (response: IMessage[]) => {}, onFailed = () => {}) =>
+  async (dispatch) => {
+    try {
+      const res = await api.post("/chat/loadChatHistory", req);
+      onSuccess(res.data);
+    } catch (err: unknown) {
+      console.error(err);
+      toast.error("Error loading chat history");
+      onFailed();
+    }
+  };
+
+export const clearHistory = async (
   req,
-  onSuccess = (response:IMessage[]) => {},
+  onSuccess = () => {},
   onFailed = () => {}
 ) => {
   try {
-    const res = await api.post("/chat/loadChatHistory", req);
-    onSuccess(res.data);
-  } catch (err: unknown) {
-    console.error(err);
-    toast.error("Error loading chat history");
-    onFailed();
-  }
-};
-
-export const clearHistory = async (req, onSuccess = ()=>{}, onFailed=()=>{}) =>{
-  try{
     await api.post("/chat/clearHistory", req);
     onSuccess();
-  } catch(err: unknown){
+  } catch (err: unknown) {
     console.error(err);
     toast.error("Error clearing chat history");
     onFailed();
   }
-}
+};
 
-export const moveToFolder = async (req, onSuccess = ()=>{}, onFailed=()=>{}) =>{
-  try{
-    await api.post("/chat/moveToFolder", req);
-    onSuccess();
-  } catch(err: unknown){
-    console.error(err);
-    toast.error("Error moving document to folder");
-    onFailed();
-  }
-}
+export const moveToFolder =
+  (req, onSuccess = () => {}, onFailed = () => {}) =>
+  async (dispatch) => {
+    try {
+      await api.post("/chat/moveToFolder", req);
+      onSuccess();
+    } catch (err: unknown) {
+      console.error(err);
+      toast.error("Error moving document to folder");
+      onFailed();
+    }
+  };
