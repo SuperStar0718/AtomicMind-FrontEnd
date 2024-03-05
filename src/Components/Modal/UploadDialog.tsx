@@ -57,7 +57,7 @@ export const UploadDialog = ({ enableFolder, folder }: IDialogProps) => {
     // 👇 Create new FormData object and append files
     const data = new FormData();
     data.append("id", userData._id);
-    data.append("folderName", folderName.value);
+    if (showFolder) data.append("folderName", folderName.value);
     const files = fileList ? [...fileList] : [];
     files.forEach((file, i) => {
       data.append(`file-${i}`, file, file.name);
