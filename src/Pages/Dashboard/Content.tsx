@@ -1,18 +1,29 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import "./styles.css";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { clearHistory, loadChatHistory, uploadFiles } from "@/actions/chat";
-import { LOAD_CHAT_HISTORY, SET_CHAT_HISTORY, UPDATE_CHAT_HISTORY } from "@/actions/types";
+import { clearHistory, uploadFiles } from "@/actions/chat";
+import {
+  LOAD_CHAT_HISTORY,
+  SET_CHAT_HISTORY,
+  UPDATE_CHAT_HISTORY,
+} from "@/actions/types";
 import { toast } from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import UserImage from "@/assets/images/user.png";
 import BotImage from "@/assets/images/bot.png";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { loadUser } from "@/actions/auth";
+import { loadUser, logoutAction } from "@/actions/auth";
 import ClearHistory from "@/assets/images/removeHistory.svg";
+import Userprofile from "@/assets/images/user.svg";
+import DeleteConfirmationModal from "@/Components/Modal/DeleteConfirmationModal";
+import { TERipple } from "tw-elements-react";
+import { Dropdown } from "flowbite";
+
+import type { DropdownOptions, DropdownInterface } from "flowbite";
+import type { InstanceOptions } from "flowbite";
 
 const fileTypes = ["PDF", "TXT"];
 /**
@@ -26,15 +37,25 @@ export interface IMessage {
 const Content = ({ chat_history, type, name }) => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
   const { userData } = useSelector((state: RootState) => state.auth);
+  const [showModal, setShowModal] = useState(false);
+  const UserMenu = useRef(null);
+  const UserMenuButton = useRef(null);
 
   const dispatch = useDispatch<AppDispatch>();
 
   const [query, setQuery] = useState("");
-
+  const onClickLogout =(e:any)=>{
+    e.preventDefault();
+    dispatch(logoutAction());
+    console.log('helllo')
+  }
   const onClickClearHisotry = () => {
-    dispatch(clearHistory({ id: userData._id, type: type, name: name }, ()=>{
-        dispatch({type:LOAD_CHAT_HISTORY, payload:[]});
-    }));
+    dispatch(
+      clearHistory({ id: userData._id, type: type, name: name }, () => {
+        dispatch({ type: LOAD_CHAT_HISTORY, payload: [] });
+        setShowModal(false);
+      })
+    );
   };
   const handleChange = (file: File) => {
     const formData = new FormData();
@@ -57,7 +78,7 @@ const Content = ({ chat_history, type, name }) => {
       type: type,
       name: name,
     };
-    if ( type == "") {
+    if (type == "") {
       toast.error("Please select a document to chat with you.");
       return;
     }
@@ -126,6 +147,47 @@ const Content = ({ chat_history, type, name }) => {
     }
   };
 
+  useEffect(() => {
+    // set the dropdown menu element
+    const $targetEl: HTMLElement = UserMenu.current;
+
+    // set the element that trigger the dropdown menu on click
+    const $triggerEl: HTMLElement = UserMenuButton.current;
+
+    // Ensure elements are not null
+    if (!$targetEl || !$triggerEl) {
+      console.error("Elements not found");
+      return;
+    }
+
+    // options with default values
+    const options: DropdownOptions = {
+      placement: "bottom",
+      triggerType: "click",
+      offsetSkidding: 0,
+      offsetDistance: 0,
+    };
+
+    // instance options object
+    const instanceOptions: InstanceOptions = {
+      override: false,
+    };
+
+    /*
+     * targetEl: required
+     * triggerEl: required
+     * options: optional
+     * instanceOptions: optional
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const dropdown: DropdownInterface = new Dropdown(
+      $targetEl,
+      $triggerEl,
+      options,
+      instanceOptions
+    );
+  }, []);
+
   return (
     <>
       <div className="relative w-full h-screen">
@@ -165,9 +227,84 @@ const Content = ({ chat_history, type, name }) => {
                 </span>
               </span>
             </div>
-            <button className="p-1 rounded hover:bg-gray-100" onClick={onClickClearHisotry}>
-              <img src={ClearHistory} alt="" className="h-[25px] w-[25px]" />
-            </button>
+            <div className="flex flex-row" >
+              <TERipple rippleColor="white">
+                <button
+                  className="p-1 rounded hover:bg-gray-100"
+                  onClick={() => setShowModal(true)}
+                >
+                  <img
+                    src={ClearHistory}
+                    alt=""
+                    className="h-[25px] w-[25px]"
+                  />
+                </button>
+              </TERipple>
+              {/* <!-- Modal --> */}
+              <DeleteConfirmationModal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                onClickClearHisotry={onClickClearHisotry}
+              />
+
+              <img
+                id="avatarButton"
+                data-dropdown-toggle="userDropdown"
+                data-dropdown-placement="bottom-start"
+                className="w-8 h-8 rounded-full cursor-pointer"
+                src={Userprofile}
+                alt="User Profile"
+                ref={UserMenuButton}
+              />
+
+              <div
+                id="userDropdown"
+                ref={UserMenu}
+                className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600 w-fit"
+              >
+                <div className="px-4 py-3 text-sm text-gray-900 dark:text-white w-fit">
+                  <div className="font-medium w-fit">{userData?.email}</div>
+                </div>
+                {/* <ul
+                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                  aria-labelledby="avatarButton"
+                >
+                  <li>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                      Dashboard
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                      Settings
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                    >
+                      Earnings
+                    </a>
+                  </li>
+                </ul> */}
+                <div className="py-1">
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                    onClick={(e: any) => onClickLogout(e)}
+                  >
+                    Sign out
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
           <div
             className="p-splitter p-component p-splitter-horizontal"
@@ -294,3 +431,7 @@ const mapStateToProps = (state: RootState) => ({
 const ConnectedContent = connect(mapStateToProps)(Content);
 
 export default ConnectedContent;
+function logout(): any {
+  throw new Error("Function not implemented.");
+}
+

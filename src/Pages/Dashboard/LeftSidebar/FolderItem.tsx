@@ -24,7 +24,6 @@ export const FolderItem = ({ folderName,setDialogOption, children }) => {
       folderName: folderName,
     };
     dispatch(deleteFolder(data,()=>{
-      console.log('deleted')
       dispatch(loadUser())
     }));
   };
