@@ -5,6 +5,7 @@ import {
   SET_CHAT_HISTORY,
   SET_QUERY,
   UPDATE_CHAT_HISTORY,
+  UPDATE_SOURCE_DOCUMENTS,
 } from "../actions/types";
 
 interface IHistory {
@@ -43,6 +44,16 @@ function chatReducer(state = initialState, action: any) {
           (msg, index) =>
             index === state.chat_history.length - 1
               ? { ...msg, content: msg.content + payload } // Update the last message
+              : msg // Keep all other messages unchanged
+        ),
+      };
+    case UPDATE_SOURCE_DOCUMENTS:
+      return {
+        ...state,
+        chat_history: state.chat_history.map(
+          (msg, index) =>
+            index === state.chat_history.length - 1
+              ? { ...msg, sourceDocuments: payload } // Update the last message
               : msg // Keep all other messages unchanged
         ),
       };

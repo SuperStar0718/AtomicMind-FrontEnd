@@ -3,7 +3,6 @@ import { UploadDialog } from "@/Components/Modal/UploadDialog";
 import FolderGroup from "./FolderGroup";
 import { FolderItem } from "./FolderItem";
 import DocumentItem from "./DocumentItem";
-import { MoveToFolderDialog } from "@/Components/Modal/MoveToFolderDialog";
 import UploadImage from "@/assets/images/upload.svg";
 import ChatIcon from "@/assets/images/chatIcon.svg";
 import { useEffect, useState } from "react";
@@ -25,7 +24,7 @@ interface IDocumentItem {
 }
 
 export const LeftSidebar = () => {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
   const [documents, setDocuments] = useState<IDocumentItem[]>([]);
   const [dialogProps, setDialogProps] = useState<IDialogProps>({
     enableFolder: false,
@@ -37,31 +36,42 @@ export const LeftSidebar = () => {
   };
 
   const onClickChatAllDocument = () => {
-    dispatch({type:SET_CHAT_CONTEXT, payload:{type:'allDocuments', name:''}})
-    dispatch(loadChatHistory({id:userData._id,type:'allDocuments', name:''}, (res)=>{
-      dispatch({type:LOAD_CHAT_HISTORY, payload:res});
-    }));
+    dispatch({
+      type: SET_CHAT_CONTEXT,
+      payload: { type: "allDocuments", name: "" },
+    });
+    dispatch(
+      loadChatHistory(
+        { id: userData._id, type: "allDocuments", name: "" },
+        (res) => {
+          dispatch({ type: LOAD_CHAT_HISTORY, payload: res });
+        }
+      )
+    );
   };
 
   const { userData } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    const allDocuments:IDocumentItem[] = [];
+    const allDocuments: IDocumentItem[] = [];
     if (userData === null) return;
     userData.folders?.forEach((folder) => {
       folder.documents?.forEach((document) => {
-        allDocuments.push({documentName:document, folderName:folder.folderName});
+        allDocuments.push({
+          documentName: document,
+          folderName: folder.folderName,
+        });
       });
     });
     userData.documents?.forEach((document) => {
-      allDocuments.push({documentName:document});
+      allDocuments.push({ documentName: document });
     });
     setDocuments(allDocuments);
   }, [userData]);
 
   return (
     <>
-      <div className="flex flex-col h-screen bg-gray-50">
+      <div className="flex flex-col h-screen border-r-2 bg-gray-50 border-r-gray-300">
         <aside className="min-w-[300px] xl:min-w-[310px] fixed lg:relative lg:translate-x-0 bg-white top-0 left-0 z-40 w-64 h-screen transition-transform border-r shadow-r -translate-x-full ">
           <div className="flex flex-col h-full divide-y divide-solid">
             <div className="flex flex-col gap-2 p-2">
@@ -87,7 +97,7 @@ export const LeftSidebar = () => {
               <button
                 aria-label="Chat with All Documents"
                 className="items-center bg-[#6366f1] text-white cursor-pointer  h-[35px] flex justify-between py-[0.65625rem] px-[1.09375rem]  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
-               onClick={()=>onClickChatAllDocument()}
+                onClick={() => onClickChatAllDocument()}
               >
                 <img src={ChatIcon} alt="" className="w-[14px] h-[14px]" />
                 <span
@@ -120,7 +130,13 @@ export const LeftSidebar = () => {
               </FolderGroup>
               <DocumentGroup>
                 {documents.map((document, index) => {
-                  return <DocumentItem key={index} documentName={document.documentName} folderName={document.folderName} />;
+                  return (
+                    <DocumentItem
+                      key={index}
+                      documentName={document.documentName}
+                      folderName={document.folderName}
+                    />
+                  );
                 })}
               </DocumentGroup>
             </div>
