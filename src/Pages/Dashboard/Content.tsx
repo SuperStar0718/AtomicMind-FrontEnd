@@ -158,13 +158,12 @@ const Content = ({ chat_history, type, name }) => {
         reader.releaseLock();
         break;
       }
-      console.log('value:', value)
       try {
         const parsedValue = JSON.parse(value);
         console.log("parsedValue:", parsedValue.sourceDocuments);
         const isJsonObject =
           typeof parsedValue === "object" && parsedValue !== null;
-        // const hasMetadata = isJsonObject && "metadata" in parsedValue;
+        const hasMetadata = isJsonObject && "metadata" in parsedValue;
         setSourceDocuments(parsedValue.sourceDocuments);
         dispatch({
           type: UPDATE_SOURCE_DOCUMENTS,
