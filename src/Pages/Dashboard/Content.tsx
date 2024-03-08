@@ -85,7 +85,7 @@ const Content = ({ chat_history, type, name }) => {
   };
 
   const onClickDocument = (document) => {
-    console.log("source:", document.loc.pageNumber);
+    console.log("source:", `${baseURL}${selectedDocument.source}`);
     setSelectedDocument(document);
     setShowCitation(true);
   };
