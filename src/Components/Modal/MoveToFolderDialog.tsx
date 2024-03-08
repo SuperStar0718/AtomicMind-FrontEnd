@@ -24,8 +24,6 @@ export const MoveToFolderDialog = ({ show, setOpenModal, documentName }) => {
   const { userData } = useSelector((state: RootState) => state.auth);
 
   const onClickMove = () => {
-    console.log('folderName:', folderName)
-    console.log('documentName:', documentName)
       dispatch(moveToFolder({id:userData._id, folderName:folderName.value, documentName:documentName},()=>{
         setOpenModal(false);
         dispatch(loadUser());
@@ -44,8 +42,7 @@ export const MoveToFolderDialog = ({ show, setOpenModal, documentName }) => {
       setOptions(options);
       setFolderName(options[0]);
     }
-    console.log("show:", show);
-  }, [show]);
+  }, [show, userData]);
 
   return (
     <TEModal

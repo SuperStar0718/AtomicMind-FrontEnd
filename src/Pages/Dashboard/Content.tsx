@@ -8,6 +8,7 @@ import {
   LOAD_CHAT_HISTORY,
   SET_CHAT_HISTORY,
   UPDATE_CHAT_HISTORY,
+  UPDATE_SOURCE_DOCUMENTS,
 } from "@/actions/types";
 import { toast } from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
@@ -17,10 +18,18 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { loadUser, logoutAction } from "@/actions/auth";
 import ClearHistory from "@/assets/images/removeHistory.svg";
+import CloseButton from "@/assets/images/close.svg";
 import Userprofile from "@/assets/images/user.svg";
 import DeleteConfirmationModal from "@/Components/Modal/DeleteConfirmationModal";
 import { TERipple } from "tw-elements-react";
 import { Dropdown } from "flowbite";
+
+import { Viewer, Worker } from "@react-pdf-viewer/core";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import Split from "@uiw/react-split";
+// Import styles
+import "@react-pdf-viewer/core/lib/styles/index.css";
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import type { InstanceOptions } from "flowbite";
@@ -38,17 +47,23 @@ const Content = ({ chat_history, type, name }) => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
   const { userData } = useSelector((state: RootState) => state.auth);
   const [showModal, setShowModal] = useState(false);
+  const [sourceDocuments, setSourceDocuments] = useState([]);
+  const [selectedDocument, setSelectedDocument] = useState<any>();
+  const [showCitiation, setShowCitation] = useState(false);
   const UserMenu = useRef(null);
   const UserMenuButton = useRef(null);
 
+  // const pdfjsVersion = packageJson.dependencies['pdfjs-dist'];
   const dispatch = useDispatch<AppDispatch>();
-
+  // const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  // Create new plugin instance
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const [query, setQuery] = useState("");
-  const onClickLogout =(e:any)=>{
+  const onClickLogout = (e: React.MouseEvent) => {
     e.preventDefault();
     dispatch(logoutAction());
-    console.log('helllo')
-  }
+    console.log("helllo");
+  };
   const onClickClearHisotry = () => {
     dispatch(
       clearHistory({ id: userData._id, type: type, name: name }, () => {
@@ -67,6 +82,12 @@ const Content = ({ chat_history, type, name }) => {
         dispatch(loadUser());
       })
     );
+  };
+
+  const onClickDocument = (document) => {
+    console.log("source:", document.loc.pageNumber);
+    setSelectedDocument(document);
+    setShowCitation(true);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -137,13 +158,29 @@ const Content = ({ chat_history, type, name }) => {
         reader.releaseLock();
         break;
       }
-      const text = value
-        .replace(/\\n/g, "\n")
-        .replace(/```$/, "")
-        .replace("markdown", "");
-      console.log("text:", text);
+      try {
+        const parsedValue = JSON.parse(value);
+        const isJsonObject =
+          typeof parsedValue === "object" && parsedValue !== null;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const hasMetadata = isJsonObject && "metadata" in parsedValue;
+        console.log("parsedValue:", parsedValue.sourceDocuments);
+        setSourceDocuments(parsedValue.sourceDocuments);
+        dispatch({
+          type: UPDATE_SOURCE_DOCUMENTS,
+          payload: parsedValue.sourceDocuments,
+        });
+      } catch (e) {
+        // The string is not a valid JSON
+        const text = value
+          .replace(/\\n/g, "\n")
+          .replace(/```$/, "")
+          .replace("markdown", "");
+        console.log("text:", text);
 
-      dispatch({ type: UPDATE_CHAT_HISTORY, payload: text });
+        dispatch({ type: UPDATE_CHAT_HISTORY, payload: text });
+        console.log("sourceDocuments:", sourceDocuments);
+      }
     }
   };
 
@@ -192,7 +229,7 @@ const Content = ({ chat_history, type, name }) => {
     <>
       <div className="relative w-full h-screen">
         <div>
-          <div className="border-b w-full px-3 py-2 h-[48px] mt-[48px] md:mt-0 flex items-center justify-between">
+          <div className="border-b-2 border-b-gray-300  w-full px-3 py-2 h-[48px] mt-[48px] md:mt-0 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-medium md:text-base">
               <h3 className="hidden md:block">Conversation with</h3>
               <span
@@ -227,7 +264,7 @@ const Content = ({ chat_history, type, name }) => {
                 </span>
               </span>
             </div>
-            <div className="flex flex-row" >
+            <div className="flex flex-row">
               <TERipple rippleColor="white">
                 <button
                   className="p-1 rounded hover:bg-gray-100"
@@ -298,7 +335,7 @@ const Content = ({ chat_history, type, name }) => {
                   <a
                     href="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                    onClick={(e: any) => onClickLogout(e)}
+                    onClick={(e: React.MouseEvent) => onClickLogout(e)}
                   >
                     Sign out
                   </a>
@@ -311,47 +348,65 @@ const Content = ({ chat_history, type, name }) => {
             data-pc-name="splitter"
             data-pc-section="root"
           >
-            <div
-              className="p-splitter-panel"
-              role="presentation"
-              data-pc-name=""
-              data-pc-section="root"
-            >
-              <div className="overflow-auto flex flex-col md:h-[calc(100vh-48px)] h-[calc(100vh-96px)] justify-between">
+            <Split className="flex flex-row p-splitter-panel">
+              <div
+                style={{ width: "60%", minWidth: "30%" }}
+                className="overflow-auto flex-auto flex flex-col md:h-[calc(100vh-48px)] h-[calc(100vh-96px)] justify-between"
+              >
                 <ScrollToBottom className="h-full overflow-auto">
                   {chat_history.length > 0 ? (
                     chat_history.map((chat, index) => {
                       return (
-                        <div
-                          key={index}
-                          className={`flex items-start p-5 ${
-                            chat.role == "user" ? " flex-row-reverse " : ""
-                          }`}
-                        >
-                          <div className="min-w-fit">
-                            <img
-                              height="50"
-                              width="50"
-                              src={`${
-                                chat.role == "user" ? UserImage : BotImage
-                              }`}
-                            />
-                          </div>
+                        <>
                           <div
-                            className={`min-h-[50px] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 px-4 ${
-                              chat.role == "user"
-                                ? "bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl"
-                                : "bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl"
+                            key={index}
+                            className={`flex items-start p-5 ${
+                              chat.role == "user" ? " flex-row-reverse " : ""
                             }`}
                           >
-                            <ReactMarkdown
-                              key={index}
-                              remarkPlugins={[remarkGfm]}
+                            <div className="min-w-fit">
+                              <img
+                                height="50"
+                                width="50"
+                                src={`${
+                                  chat.role == "user" ? UserImage : BotImage
+                                }`}
+                              />
+                            </div>
+                            <div
+                              className={`min-h-[50px] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 px-4 ${
+                                chat.role == "user"
+                                  ? "bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl"
+                                  : "bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl"
+                              }`}
                             >
-                              {chat.content}
-                            </ReactMarkdown>
+                              <ReactMarkdown
+                                key={index}
+                                remarkPlugins={[remarkGfm]}
+                              >
+                                {chat.content}
+                              </ReactMarkdown>
+                            </div>
                           </div>
-                        </div>
+                          <div className="flex flex-row justify-center gap-5">
+                            {chat.sourceDocuments &&
+                              chat.sourceDocuments.map((document, index) => {
+                                return (
+                                  <div
+                                    key={index}
+                                    className=" max-w-[25%] border border-gray-300 border-opacity-70 rounded p-4"
+                                  >
+                                    <a
+                                      onClick={() => onClickDocument(document)}
+                                      className="text-base font-semibold break-words hover:cursor-pointer hover:underline"
+                                    >
+                                      {document.source.replace("uploads/", "")}
+                                    </a>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </>
                       );
                     })
                   ) : name == "" ? (
@@ -369,6 +424,24 @@ const Content = ({ chat_history, type, name }) => {
                       <p>Start conversation with this Folder</p>
                     </div>
                   )}
+                  {/* <div className="flex flex-row justify-center gap-5">
+                    {sourceDocuments &&
+                      sourceDocuments.map((document, index) => {
+                        return (
+                          <div
+                            key={index}
+                            className=" max-w-[25%] border border-gray-300 border-opacity-70 rounded p-4"
+                          >
+                            <a
+                              onClick={() => onClickDocument(document)}
+                              className="text-base font-semibold break-words hover:cursor-pointer hover:underline"
+                            >
+                              {document.source.replace("uploads/", "")}
+                            </a>
+                          </div>
+                        );
+                      })}
+                  </div> */}
                 </ScrollToBottom>
 
                 <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
@@ -414,7 +487,31 @@ const Content = ({ chat_history, type, name }) => {
                   </form>
                 </div>
               </div>
-            </div>
+              {showCitiation && (
+                <div
+                  style={{ width: "40%", minWidth: "30%" }}
+                  className="flex flex-col"
+                >
+                  <button
+                    className="p-2"
+                    onClick={() => setShowCitation(false)}
+                  >
+                    <img src={CloseButton} alt="" className="w-6 h-6" />
+                  </button>
+                  <div className="w-full">
+                    <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.js">
+                      <div className="mx-auto h-[100vh]">
+                        <Viewer
+                          fileUrl={`http://localhost:8081/${selectedDocument.source}`}
+                          plugins={[defaultLayoutPluginInstance]}
+                          initialPage={selectedDocument.loc.pageNumber - 1}
+                        />
+                      </div>
+                    </Worker>
+                  </div>
+                </div>
+              )}
+            </Split>
           </div>
         </div>
       </div>
@@ -431,7 +528,3 @@ const mapStateToProps = (state: RootState) => ({
 const ConnectedContent = connect(mapStateToProps)(Content);
 
 export default ConnectedContent;
-function logout(): any {
-  throw new Error("Function not implemented.");
-}
-

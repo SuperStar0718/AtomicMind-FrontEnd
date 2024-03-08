@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from "axios";
 import toast from "react-hot-toast";
 import api from "../utils/api";
@@ -97,11 +98,11 @@ export const loadChatHistory =
     }
   };
 
-export const clearHistory = async (
+export const clearHistory =  (
   req,
   onSuccess = () => {},
   onFailed = () => {}
-) => {
+) => async(dispatch)=> {
   try {
     await api.post("/chat/clearHistory", req);
     onSuccess();
