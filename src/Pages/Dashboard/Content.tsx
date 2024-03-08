@@ -85,9 +85,9 @@ const Content = ({ chat_history, type, name }) => {
   };
 
   const onClickDocument = (document) => {
-    console.log("source:", `${baseURL}${selectedDocument.source}`);
     setSelectedDocument(document);
     setShowCitation(true);
+    console.log("source:", `${baseURL}${selectedDocument.source}`);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
