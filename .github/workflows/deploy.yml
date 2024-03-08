@@ -32,6 +32,8 @@ jobs:
             cd /var/www/vhosts/atomicask.com/httpdocs/
             sudo git fetch --all
             sudo git reset --hard origin/prod
+            rm -r node_modules
+            rm package-lock.json
             npm install
             npm run build
             cp .htaccess /dist
