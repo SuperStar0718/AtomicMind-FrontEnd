@@ -160,11 +160,10 @@ const Content = ({ chat_history, type, name }) => {
       }
       try {
         const parsedValue = JSON.parse(value);
+        console.log("parsedValue:", parsedValue.sourceDocuments);
         const isJsonObject =
           typeof parsedValue === "object" && parsedValue !== null;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const hasMetadata = isJsonObject && "metadata" in parsedValue;
-        console.log("parsedValue:", parsedValue.sourceDocuments);
+        // const hasMetadata = isJsonObject && "metadata" in parsedValue;
         setSourceDocuments(parsedValue.sourceDocuments);
         dispatch({
           type: UPDATE_SOURCE_DOCUMENTS,
