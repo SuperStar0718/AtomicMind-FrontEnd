@@ -158,6 +158,7 @@ const Content = ({ chat_history, type, name }) => {
         reader.releaseLock();
         break;
       }
+      console.log('value:', value)
       try {
         const parsedValue = JSON.parse(value);
         console.log("parsedValue:", parsedValue.sourceDocuments);
