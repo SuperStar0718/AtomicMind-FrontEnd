@@ -501,7 +501,7 @@ const Content = ({ chat_history, type, name }) => {
                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.js">
                       <div className="mx-auto h-[100vh]">
                         <Viewer
-                          fileUrl={`http://localhost:8081/${selectedDocument.source}`}
+                          fileUrl={`${baseURL}${selectedDocument.source}`}
                           plugins={[defaultLayoutPluginInstance]}
                           initialPage={selectedDocument.loc.pageNumber - 1}
                         />
