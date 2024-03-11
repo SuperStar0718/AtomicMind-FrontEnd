@@ -1,11 +1,11 @@
 import {
     REGISTER_SUCCESS,
-    //REGISTER_FAIL,
     USER_LOADED,
     AUTH_ERROR,
     LOGIN_SUCCESS,
-    //LOGIN_FAIL,
     LOGOUT,
+    SHOW_CITATION,
+    HIDE_CITATION
   } from "../actions/types";
 
   export interface IFolder{
@@ -18,6 +18,7 @@ import {
     isAuthenticated: null,
     loading: true,
     userData: null,
+    showCitation: false,
   };
   
   function authReducer(state = initialState, action: any) {
@@ -38,6 +39,16 @@ import {
           ...payload,
           isAuthenticated: true,
           loading: false,
+        };
+      case SHOW_CITATION:
+        return {
+          ...state,
+          showCitation: true,
+        };
+      case HIDE_CITATION:
+        return {
+          ...state,
+          showCitation: false,
         };
       case AUTH_ERROR:
       case LOGOUT:

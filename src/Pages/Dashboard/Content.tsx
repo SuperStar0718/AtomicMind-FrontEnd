@@ -5,8 +5,10 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { clearHistory, uploadFiles } from "@/actions/chat";
 import {
+  HIDE_CITATION,
   LOAD_CHAT_HISTORY,
   SET_CHAT_HISTORY,
+  SHOW_CITATION,
   UPDATE_CHAT_HISTORY,
   UPDATE_SOURCE_DOCUMENTS,
 } from "@/actions/types";
@@ -45,11 +47,12 @@ export interface IMessage {
 
 const Content = ({ chat_history, type, name }) => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
-  const { userData } = useSelector((state: RootState) => state.auth);
+  const { userData, showCitation } = useSelector((state: RootState) => state.auth);
+
   const [showModal, setShowModal] = useState(false);
   const [sourceDocuments, setSourceDocuments] = useState([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedDocument, setSelectedDocument] = useState<any>();
-  const [showCitiation, setShowCitation] = useState(false);
   const UserMenu = useRef(null);
   const UserMenuButton = useRef(null);
 
@@ -62,7 +65,6 @@ const Content = ({ chat_history, type, name }) => {
   const onClickLogout = (e: React.MouseEvent) => {
     e.preventDefault();
     dispatch(logoutAction());
-    console.log("helllo");
   };
   const onClickClearHisotry = () => {
     dispatch(
@@ -72,6 +74,10 @@ const Content = ({ chat_history, type, name }) => {
       })
     );
   };
+
+  const hideCitation = () => {
+    dispatch({ type: HIDE_CITATION });
+  }
   const handleChange = (file: File) => {
     const formData = new FormData();
     formData.append("id", userData._id);
@@ -86,9 +92,34 @@ const Content = ({ chat_history, type, name }) => {
 
   const onClickDocument = (document) => {
     setSelectedDocument(document);
-    setShowCitation(true);
-    console.log("source:", `${baseURL}${selectedDocument.source}`);
+    dispatch({type:SHOW_CITATION});
   };
+
+  useEffect(() => {
+    if(type=="folder"){
+      const folder = userData.folders.find((folder)=>folder.folderName == name);
+      if(folder){
+        setSelectedDocument({
+          metadata: {
+            source: "uploads/"+folder.documents[0],
+            'loc.pageNumber' : 1,
+          },
+        })
+      }
+      console.log('showcitation')
+    } else if(type=='document'){
+      const document = userData.documents.find((document)=>document == name);
+      if(document){
+        setSelectedDocument({
+          metadata: {
+            source: "uploads/"+document,
+            'loc.pageNumber' : 1,
+          },
+        })
+      }
+    }
+    
+  }, [name, type, userData]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -163,6 +194,7 @@ const Content = ({ chat_history, type, name }) => {
         console.log("parsedValue:", parsedValue.sourceDocuments);
         const isJsonObject =
           typeof parsedValue === "object" && parsedValue !== null;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const hasMetadata = isJsonObject && "metadata" in parsedValue;
         setSourceDocuments(parsedValue.sourceDocuments);
         dispatch({
@@ -356,7 +388,7 @@ const Content = ({ chat_history, type, name }) => {
                   {chat_history.length > 0 ? (
                     chat_history.map((chat, index) => {
                       return (
-                        <>
+                        <div key={index}>
                           <div
                             key={index}
                             className={`flex items-start p-5 ${
@@ -388,7 +420,7 @@ const Content = ({ chat_history, type, name }) => {
                             </div>
                           </div>
                           <div className="flex flex-row justify-center gap-5">
-                            {chat.sourceDocuments &&
+                            {chat.sourceDocuments && type !='document' &&
                               chat.sourceDocuments.map((document, index) => {
                                 return (
                                   <div
@@ -399,13 +431,13 @@ const Content = ({ chat_history, type, name }) => {
                                       onClick={() => onClickDocument(document)}
                                       className="text-base font-semibold break-words hover:cursor-pointer hover:underline"
                                     >
-                                      {document.source.replace("uploads/", "")}
+                                      {document.metadata.source.replace("uploads/", "")}
                                     </a>
                                   </div>
                                 );
                               })}
                           </div>
-                        </>
+                        </div>
                       );
                     })
                   ) : name == "" ? (
@@ -423,24 +455,7 @@ const Content = ({ chat_history, type, name }) => {
                       <p>Start conversation with this Folder</p>
                     </div>
                   )}
-                  {/* <div className="flex flex-row justify-center gap-5">
-                    {sourceDocuments &&
-                      sourceDocuments.map((document, index) => {
-                        return (
-                          <div
-                            key={index}
-                            className=" max-w-[25%] border border-gray-300 border-opacity-70 rounded p-4"
-                          >
-                            <a
-                              onClick={() => onClickDocument(document)}
-                              className="text-base font-semibold break-words hover:cursor-pointer hover:underline"
-                            >
-                              {document.source.replace("uploads/", "")}
-                            </a>
-                          </div>
-                        );
-                      })}
-                  </div> */}
+              
                 </ScrollToBottom>
 
                 <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
@@ -486,14 +501,14 @@ const Content = ({ chat_history, type, name }) => {
                   </form>
                 </div>
               </div>
-              {showCitiation && (
+              { showCitation && (
                 <div
                   style={{ width: "40%", minWidth: "30%" }}
                   className="flex flex-col"
                 >
                   <button
                     className="p-2"
-                    onClick={() => setShowCitation(false)}
+                    onClick={() => hideCitation()}
                   >
                     <img src={CloseButton} alt="" className="w-6 h-6" />
                   </button>
@@ -501,9 +516,9 @@ const Content = ({ chat_history, type, name }) => {
                     <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.js">
                       <div className="mx-auto h-[100vh]">
                         <Viewer
-                          fileUrl={`${baseURL}${selectedDocument.source}`}
+                          fileUrl={`${baseURL}${selectedDocument.metadata.source}`}
                           plugins={[defaultLayoutPluginInstance]}
-                          initialPage={selectedDocument.loc.pageNumber - 1}
+                          initialPage={selectedDocument.metadata['loc.pageNumber'] - 1}
                         />
                       </div>
                     </Worker>
