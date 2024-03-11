@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { deleteDocument, loadChatHistory } from "@/actions/chat";
 import { loadUser } from "@/actions/auth";
-import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT } from "@/actions/types";
+import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT, SHOW_CITATION } from "@/actions/types";
 import { MoveToFolderDialog } from "@/Components/Modal/MoveToFolderDialog";
 
 const DocumentItem = ({
@@ -27,8 +27,6 @@ const DocumentItem = ({
   const onClickView = () => {
     console.log("View:", folderName);
   };
-
-
 
   const onClickDelete = () => {
     const data = {
@@ -55,9 +53,11 @@ const DocumentItem = ({
         { id: userData._id, type: "document", name: documentName },
         (res) => {
           dispatch({ type: LOAD_CHAT_HISTORY, payload: res });
+          dispatch({type:SHOW_CITATION})
         }
       )
     );
+
   };
 
   useEffect(() => {

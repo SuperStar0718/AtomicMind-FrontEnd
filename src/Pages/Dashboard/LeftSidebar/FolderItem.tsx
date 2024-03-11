@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { deleteFolder, loadChatHistory } from "@/actions/chat";
 import { loadUser } from "@/actions/auth";
-import { LOAD_CHAT_HISTORY } from "@/actions/types";
+import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT, SHOW_CITATION } from "@/actions/types";
 
 export const FolderItem = ({ folderName,setDialogOption, children }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -29,10 +29,12 @@ export const FolderItem = ({ folderName,setDialogOption, children }) => {
   };
 
   const onClickFolderItem = () => {
-    dispatch({type:'SET_CHAT_CONTEXT', payload:{type:'folder', name:folderName}});
+    dispatch({type:SET_CHAT_CONTEXT, payload:{type:'folder', name:folderName}});
     dispatch(loadChatHistory({id:userData._id,type:'folder', name:folderName}, (res)=>{
       dispatch({type:LOAD_CHAT_HISTORY, payload:res});
+      dispatch({type:SHOW_CITATION})
     }));
+    
   }
 
   const onClickAddDocuments = () => {
