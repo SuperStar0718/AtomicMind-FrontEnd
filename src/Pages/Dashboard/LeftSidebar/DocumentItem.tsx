@@ -24,10 +24,6 @@ const DocumentItem = ({
   const dropDownButton = useRef(null);
   const dropDownMenu = useRef(null);
 
-  const onClickView = () => {
-    console.log("View:", folderName);
-  };
-
   const onClickDelete = () => {
     const data = {
       id: userData._id,
@@ -123,7 +119,7 @@ const DocumentItem = ({
         >
           <div
             className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
-            onClick={() => onClickView()}
+            onClick={() => onClickDocument()}
           >
             View
           </div>
