@@ -142,11 +142,10 @@ const Content = ({ chat_history, type, name }) => {
       }
       console.log("showcitation");
     } else if (type == "document") {
-      const document = userData.documents.find((document) => document == name);
-      if (document) {
+      if (name) {
         setSelectedDocument({
           metadata: {
-            source: "uploads/" + document,
+            source: "uploads/" + name,
             "loc.pageNumber": 1,
           },
         });
