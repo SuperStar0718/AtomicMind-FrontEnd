@@ -25,7 +25,6 @@ import Userprofile from "@/assets/images/user.svg";
 import DeleteConfirmationModal from "@/Components/Modal/DeleteConfirmationModal";
 import { TERipple } from "tw-elements-react";
 import { Dropdown } from "flowbite";
-
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import Split from "@uiw/react-split";
@@ -47,12 +46,15 @@ export interface IMessage {
 
 const Content = ({ chat_history, type, name }) => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
-  const { userData, showCitation } = useSelector((state: RootState) => state.auth);
+  const { userData, showCitation } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   const [showModal, setShowModal] = useState(false);
   const [sourceDocuments, setSourceDocuments] = useState([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedDocument, setSelectedDocument] = useState<any>();
+  const [isThinking, setIsThinking] = useState(false);
   const UserMenu = useRef(null);
   const UserMenuButton = useRef(null);
 
@@ -77,7 +79,7 @@ const Content = ({ chat_history, type, name }) => {
 
   const hideCitation = () => {
     dispatch({ type: HIDE_CITATION });
-  }
+  };
   const handleChange = (file: File) => {
     const formData = new FormData();
     formData.append("id", userData._id);
@@ -92,38 +94,39 @@ const Content = ({ chat_history, type, name }) => {
 
   const onClickDocument = (document) => {
     setSelectedDocument(document);
-    dispatch({type:SHOW_CITATION});
+    dispatch({ type: SHOW_CITATION });
   };
 
   useEffect(() => {
-    if(type=="folder"){
-      const folder = userData.folders.find((folder)=>folder.folderName == name);
-      if(folder){
+    if (type == "folder") {
+      const folder = userData.folders.find(
+        (folder) => folder.folderName == name
+      );
+      if (folder) {
         setSelectedDocument({
           metadata: {
-            source: "uploads/"+folder.documents[0],
-            'loc.pageNumber' : 1,
+            source: "uploads/" + folder.documents[0],
+            "loc.pageNumber": 1,
           },
-        })
+        });
       }
-      console.log('showcitation')
-    } else if(type=='document'){
-      const document = userData.documents.find((document)=>document == name);
-      if(document){
+      console.log("showcitation");
+    } else if (type == "document") {
+      const document = userData.documents.find((document) => document == name);
+      if (document) {
         setSelectedDocument({
           metadata: {
-            source: "uploads/"+document,
-            'loc.pageNumber' : 1,
+            source: "uploads/" + document,
+            "loc.pageNumber": 1,
           },
-        })
+        });
       }
     }
-    
   }, [name, type, userData]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setIsThinking(true);
     const req: { id: string; prompt: IMessage; type: string; name: string } = {
       id: userData._id,
       prompt: { role: "user", content: query },
@@ -135,7 +138,10 @@ const Content = ({ chat_history, type, name }) => {
       return;
     }
     dispatch({ type: SET_CHAT_HISTORY, payload: req.prompt });
-
+    dispatch({
+      type: SET_CHAT_HISTORY,
+      payload: { role: "assistant", content: "" },
+    });
     setQuery("");
 
     // dispatch(generateResponse(req));
@@ -147,11 +153,6 @@ const Content = ({ chat_history, type, name }) => {
       body: JSON.stringify(req),
     });
     const reader = response.body.getReader();
-
-    dispatch({
-      type: SET_CHAT_HISTORY,
-      payload: { role: "assistant", content: "" },
-    });
 
     let receivedText = "";
     const stream = new ReadableStream({
@@ -213,6 +214,7 @@ const Content = ({ chat_history, type, name }) => {
         console.log("sourceDocuments:", sourceDocuments);
       }
     }
+    setIsThinking(false);
   };
 
   useEffect(() => {
@@ -333,35 +335,6 @@ const Content = ({ chat_history, type, name }) => {
                 <div className="px-4 py-3 text-sm text-gray-900 dark:text-white w-fit">
                   <div className="font-medium w-fit">{userData?.email}</div>
                 </div>
-                {/* <ul
-                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                  aria-labelledby="avatarButton"
-                >
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Dashboard
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Settings
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Earnings
-                    </a>
-                  </li>
-                </ul> */}
                 <div className="py-1">
                   <a
                     href="#"
@@ -405,22 +378,31 @@ const Content = ({ chat_history, type, name }) => {
                               />
                             </div>
                             <div
-                              className={`min-h-[50px] [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 px-4 ${
+                              className={`min-h-[50px]   [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 px-4 ${
                                 chat.role == "user"
                                   ? "bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl"
                                   : "bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl"
-                              }`}
+                              } ${isThinking && chat.content=='' && chat.role == "assistant" ? 'flex items-center' : ''}`}
                             >
-                              <ReactMarkdown
-                                key={index}
-                                remarkPlugins={[remarkGfm]}
-                              >
-                                {chat.content}
-                              </ReactMarkdown>
+                              {isThinking && chat.content=='' && chat.role == "assistant" ? (
+                                <div className="bouncing-loader">
+                                  <div></div>
+                                  <div></div>
+                                  <div></div>
+                                </div>
+                              ) : (
+                                <ReactMarkdown
+                                  key={index}
+                                  remarkPlugins={[remarkGfm]}
+                                >
+                                  {chat.content}
+                                </ReactMarkdown>
+                              )}
                             </div>
                           </div>
                           <div className="flex flex-row justify-center gap-5">
-                            {chat.sourceDocuments && type !='document' &&
+                            {chat.sourceDocuments &&
+                              type != "document" &&
                               chat.sourceDocuments.map((document, index) => {
                                 return (
                                   <div
@@ -431,7 +413,10 @@ const Content = ({ chat_history, type, name }) => {
                                       onClick={() => onClickDocument(document)}
                                       className="text-base font-semibold break-words hover:cursor-pointer hover:underline"
                                     >
-                                      {document.metadata.source.replace("uploads/", "")}
+                                      {document.metadata.source.replace(
+                                        "uploads/",
+                                        ""
+                                      )}
                                     </a>
                                   </div>
                                 );
@@ -455,7 +440,6 @@ const Content = ({ chat_history, type, name }) => {
                       <p>Start conversation with this Folder</p>
                     </div>
                   )}
-              
                 </ScrollToBottom>
 
                 <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
@@ -501,15 +485,12 @@ const Content = ({ chat_history, type, name }) => {
                   </form>
                 </div>
               </div>
-              { showCitation && (
+              {showCitation && (
                 <div
                   style={{ width: "40%", minWidth: "30%" }}
                   className="flex flex-col"
                 >
-                  <button
-                    className="p-2"
-                    onClick={() => hideCitation()}
-                  >
+                  <button className="p-2" onClick={() => hideCitation()}>
                     <img src={CloseButton} alt="" className="w-6 h-6" />
                   </button>
                   <div className="w-full">
@@ -518,7 +499,9 @@ const Content = ({ chat_history, type, name }) => {
                         <Viewer
                           fileUrl={`${baseURL}${selectedDocument.metadata.source}`}
                           plugins={[defaultLayoutPluginInstance]}
-                          initialPage={selectedDocument.metadata['loc.pageNumber'] - 1}
+                          initialPage={
+                            selectedDocument.metadata["loc.pageNumber"] - 1
+                          }
                         />
                       </div>
                     </Worker>
