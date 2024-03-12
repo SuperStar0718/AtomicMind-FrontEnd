@@ -55,6 +55,7 @@ const Content = ({ chat_history, type, name }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedDocument, setSelectedDocument] = useState<any>();
   const [isThinking, setIsThinking] = useState(false);
+  const [rows, setRows] = useState(1);
   const UserMenu = useRef(null);
   const UserMenuButton = useRef(null);
 
@@ -64,6 +65,7 @@ const Content = ({ chat_history, type, name }) => {
   // Create new plugin instance
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const [query, setQuery] = useState("");
+  const textareaRef = useRef(null);
   const onClickLogout = (e: React.MouseEvent) => {
     e.preventDefault();
     dispatch(logoutAction());
@@ -75,6 +77,34 @@ const Content = ({ chat_history, type, name }) => {
         setShowModal(false);
       })
     );
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && e.shiftKey && rows < 5) {
+      setRows(rows + 1);
+    } else if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+    if (textareaRef.current) {
+      textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    }
+  }, [rows]);
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newLineCount = (e.target.value.match(/\n/g) || []).length;
+    if (newLineCount > 5) {
+      setRows(5);
+    }  else  {
+      setRows(newLineCount + 1);
+    }
+    setQuery(e.target.value);
   };
 
   const hideCitation = () => {
@@ -124,8 +154,7 @@ const Content = ({ chat_history, type, name }) => {
     }
   }, [name, type, userData]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setIsThinking(true);
     const req: { id: string; prompt: IMessage; type: string; name: string } = {
       id: userData._id,
@@ -143,6 +172,8 @@ const Content = ({ chat_history, type, name }) => {
       payload: { role: "assistant", content: "" },
     });
     setQuery("");
+    setRows(1);
+
 
     // dispatch(generateResponse(req));
     const response = await fetch(baseURL + "api/chat/generateResponse", {
@@ -382,9 +413,17 @@ const Content = ({ chat_history, type, name }) => {
                                 chat.role == "user"
                                   ? "bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl"
                                   : "bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl"
-                              } ${isThinking && chat.content=='' && chat.role == "assistant" ? 'flex items-center' : ''}`}
+                              } ${
+                                isThinking &&
+                                chat.content == "" &&
+                                chat.role == "assistant"
+                                  ? "flex items-center"
+                                  : ""
+                              }`}
                             >
-                              {isThinking && chat.content=='' && chat.role == "assistant" ? (
+                              {isThinking &&
+                              chat.content == "" &&
+                              chat.role == "assistant" ? (
                                 <div className="bouncing-loader">
                                   <div></div>
                                   <div></div>
@@ -445,19 +484,22 @@ const Content = ({ chat_history, type, name }) => {
                 <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
                   <form
                     className="max-w-5xl flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]"
-                    onSubmit={(e) => handleSubmit(e)}
                   >
-                    <input
+                    <textarea
+                      ref={textareaRef}
                       id="question"
                       name="question"
-                      type="text"
                       className="py-3 pr-10 rounded-md outline-none"
                       value={query}
-                      onChange={(e) => setQuery(e.target.value)}
+                      onChange={(e) => handleTextareaChange(e)}
                       autoComplete="off"
-                    />
+                      rows={rows}
+                      placeholder="Type your question here"
+                      style={{ resize: "none" }}
+                      onKeyDown={handleKeyDown}
+                    ></textarea>
                     <div className="absolute top-0 bottom-0 right-0">
-                      <div className="flex items-center h-full pr-2">
+                      <div className="flex items-end h-full py-3 pr-2">
                         <button
                           aria-label="Send Question"
                           className="flex"
