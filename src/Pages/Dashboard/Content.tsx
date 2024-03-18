@@ -84,7 +84,7 @@ const Content = ({ chat_history, type, name }) => {
       setRows(rows + 1);
     } else if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit();
+      if (!isThinking) handleSubmit();
     }
     if (textareaRef.current) {
       textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
@@ -101,7 +101,7 @@ const Content = ({ chat_history, type, name }) => {
     const newLineCount = (e.target.value.match(/\n/g) || []).length;
     if (newLineCount > 5) {
       setRows(5);
-    }  else  {
+    } else {
       setRows(newLineCount + 1);
     }
     setQuery(e.target.value);
@@ -172,7 +172,6 @@ const Content = ({ chat_history, type, name }) => {
     });
     setQuery("");
     setRows(1);
-
 
     // dispatch(generateResponse(req));
     const response = await fetch(baseURL + "api/chat/generateResponse", {
@@ -481,9 +480,7 @@ const Content = ({ chat_history, type, name }) => {
                 </ScrollToBottom>
 
                 <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
-                  <form
-                    className="max-w-5xl flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]"
-                  >
+                  <form className="max-w-5xl flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]">
                     <textarea
                       ref={textareaRef}
                       id="question"
