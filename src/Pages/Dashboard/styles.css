@@ -293,3 +293,7 @@ textarea {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+pre > code{
+  text-wrap: pretty;
+}

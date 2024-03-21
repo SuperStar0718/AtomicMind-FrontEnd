@@ -407,7 +407,7 @@ const Content = ({ chat_history, type, name }) => {
                               />
                             </div>
                             <div
-                              className={`min-h-[50px]   [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 px-4 ${
+                              className={`min-h-[50px] max-w-[100%]  [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 px-4 ${
                                 chat.role == "user"
                                   ? "bg-[#e8ebfa] flex-row-reverse rounded-tl-xl rounded-tr-[4px] rounded-b-xl"
                                   : "bg-[#f2f2f2] rounded-tr-xl rounded-tl-[4px] rounded-b-xl"
