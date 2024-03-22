@@ -91,6 +91,10 @@ const Content = ({ chat_history, type, name }) => {
     }
   };
 
+  const onClickSubmit = () => {
+    if (!isThinking) handleSubmit();
+  };
+
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
@@ -480,7 +484,7 @@ const Content = ({ chat_history, type, name }) => {
                 </ScrollToBottom>
 
                 <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
-                  <form className="max-w-5xl flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]">
+                  <div className="max-w-5xl flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]">
                     <textarea
                       ref={textareaRef}
                       id="question"
@@ -499,7 +503,7 @@ const Content = ({ chat_history, type, name }) => {
                         <button
                           aria-label="Send Question"
                           className="flex"
-                          type="submit"
+                          onClick={onClickSubmit}
                         >
                           <svg
                             aria-hidden="true"
@@ -520,7 +524,7 @@ const Content = ({ chat_history, type, name }) => {
                         </button>
                       </div>
                     </div>
-                  </form>
+                  </div>
                 </div>
               </div>
               {showCitation && (
