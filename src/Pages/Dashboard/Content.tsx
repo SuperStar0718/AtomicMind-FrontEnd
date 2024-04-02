@@ -223,9 +223,17 @@ const Content = ({ chat_history, type, name }) => {
         reader.releaseLock();
         break;
       }
+      // console.log("text:", value);
+
+
       try {
+        
         const parsedValue = JSON.parse(value);
-        console.log("parsedValue:", parsedValue.sourceDocuments);
+        // console.log('type:',typeof parsedValue)
+        if(typeof parsedValue == 'number' )
+        throw new Error("Not a valid JSON");
+      
+        // console.log("parsedValue:", parsedValue.sourceDocuments);
         const isJsonObject =
           typeof parsedValue === "object" && parsedValue !== null;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -241,10 +249,9 @@ const Content = ({ chat_history, type, name }) => {
           .replace(/\\n/g, "\n")
           .replace(/```$/, "")
           .replace("markdown", "");
-        console.log("text:", text);
 
         dispatch({ type: UPDATE_CHAT_HISTORY, payload: text });
-        console.log("sourceDocuments:", sourceDocuments);
+        // console.log("sourceDocuments:", sourceDocuments);
       }
     }
     setIsThinking(false);
