@@ -13,9 +13,11 @@ import { MoveToFolderDialog } from "@/Components/Modal/MoveToFolderDialog";
 const DocumentItem = ({
   documentName,
   folderName,
+  setDocumentTitle
 }: {
   documentName: string;
   folderName?: string;
+  setDocumentTitle : (title:string)=>void
 }) => {
   const { userData } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
@@ -43,6 +45,7 @@ const DocumentItem = ({
       type: SET_CHAT_CONTEXT,
       payload: { type: "document", name: documentName },
     });
+    setDocumentTitle('')
 
     dispatch(
       loadChatHistory(
