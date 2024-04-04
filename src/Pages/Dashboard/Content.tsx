@@ -44,7 +44,7 @@ export interface IMessage {
   content: string;
 }
 
-const Content = ({ chat_history, type, name }) => {
+const Content = ({ chat_history, type, name, documentTitle, setDocumentTitle }) => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
   const { userData, showCitation } = useSelector(
     (state: RootState) => state.auth
@@ -89,6 +89,10 @@ const Content = ({ chat_history, type, name }) => {
     if (textareaRef.current) {
       textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDocumentTitle(e.target.value);
   };
 
   const onClickSubmit = () => {
@@ -158,12 +162,17 @@ const Content = ({ chat_history, type, name }) => {
   }, [name, type, userData]);
 
   const handleSubmit = async () => {
+    if(documentTitle=="" && type=="document"){
+      toast.error("Please enter document title.");
+      return;
+    }
     setIsThinking(true);
-    const req: { id: string; prompt: IMessage; type: string; name: string } = {
+    const req: { id: string; prompt: IMessage; type: string; name: string, documentTitle:string } = {
       id: userData._id,
       prompt: { role: "user", content: query },
       type: type,
       name: name,
+      documentTitle: documentTitle
     };
     if (type == "") {
       toast.error("Please select a document to chat with you.");
@@ -225,14 +234,11 @@ const Content = ({ chat_history, type, name }) => {
       }
       // console.log("text:", value);
 
-
       try {
-        
         const parsedValue = JSON.parse(value);
         // console.log('type:',typeof parsedValue)
-        if(typeof parsedValue == 'number' )
-        throw new Error("Not a valid JSON");
-      
+        if (typeof parsedValue == "number") throw new Error("Not a valid JSON");
+
         // console.log("parsedValue:", parsedValue.sourceDocuments);
         const isJsonObject =
           typeof parsedValue === "object" && parsedValue !== null;
@@ -337,10 +343,23 @@ const Content = ({ chat_history, type, name }) => {
                 </span>
               </span>
             </div>
-            <div className="flex flex-row">
-              <TERipple rippleColor="white">
+            <div className="flex flex-row gap-4">
+              {type === "document" && (
+                <input
+                  type="text"
+                  id="first_name"
+                  className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg min-w-[250px] p-1 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Please Enter Document Title."
+                  onChange={handleInputChange}
+                  value={documentTitle}
+
+                  required
+                />
+              )}
+
+              <TERipple rippleColor="white" className="flex items-center">
                 <button
-                  className="p-1 rounded hover:bg-gray-100"
+                  className="w-6 rounded hover:bg-gray-100"
                   onClick={() => setShowModal(true)}
                 >
                   <img
@@ -356,16 +375,17 @@ const Content = ({ chat_history, type, name }) => {
                 setShowModal={setShowModal}
                 onClickClearHisotry={onClickClearHisotry}
               />
-
-              <img
-                id="avatarButton"
-                data-dropdown-toggle="userDropdown"
-                data-dropdown-placement="bottom-start"
-                className="w-8 h-8 rounded-full cursor-pointer"
-                src={Userprofile}
-                alt="User Profile"
-                ref={UserMenuButton}
-              />
+              <div className="flex items-center w-8 min-w-fit">
+                <img
+                  id="avatarButton"
+                  data-dropdown-toggle="userDropdown"
+                  data-dropdown-placement="bottom-start"
+                  className="w-8 h-8 rounded-full cursor-pointer"
+                  src={Userprofile}
+                  alt="User Profile"
+                  ref={UserMenuButton}
+                />
+              </div>
 
               <div
                 id="userDropdown"

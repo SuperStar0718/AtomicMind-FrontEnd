@@ -10,7 +10,7 @@ import { deleteFolder, loadChatHistory } from "@/actions/chat";
 import { loadUser } from "@/actions/auth";
 import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT, SHOW_CITATION } from "@/actions/types";
 
-export const FolderItem = ({ folderName,setDialogOption, children }) => {
+export const FolderItem = ({ folderName,setDialogOption,  children }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { userData } = useSelector((state: RootState) => state.auth);
   const [opened, setOpened] = useState(false);

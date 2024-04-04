@@ -1,5 +1,5 @@
 import { RootState } from "@/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import  {LeftSidebar} from "./LeftSidebar";
 import Content from "./Content";
@@ -9,6 +9,8 @@ export const Dashboard = () => {
   const { isAuthenticated, userData } = useSelector(
     (state: RootState) => state.auth
   );
+  const [documentTitle, setDocumentTitle] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,8 +23,8 @@ export const Dashboard = () => {
     <div className="flex">
       <div className="w-full overflow-hidden">
         <div className="flex w-full">
-          <LeftSidebar />
-          <Content />
+          <LeftSidebar  setDocumentTitle={setDocumentTitle} />
+          <Content documentTitle={documentTitle} setDocumentTitle={setDocumentTitle} />
         </div>
       </div>
     </div>

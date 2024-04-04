@@ -23,7 +23,7 @@ interface IDocumentItem {
   folderName?: string;
 }
 
-export const LeftSidebar = () => {
+export const LeftSidebar = ({setDocumentTitle}) => {
   const dispatch = useDispatch<AppDispatch>();
   const [documents, setDocuments] = useState<IDocumentItem[]>([]);
   const [dialogProps, setDialogProps] = useState<IDialogProps>({
@@ -122,6 +122,8 @@ export const LeftSidebar = () => {
                           key={index}
                           documentName={document}
                           folderName={folder.folderName}
+                    setDocumentTitle={setDocumentTitle}
+
                         />
                       );
                     })}
@@ -135,6 +137,8 @@ export const LeftSidebar = () => {
                       key={index}
                       documentName={document.documentName}
                       folderName={document.folderName}
+                    setDocumentTitle={setDocumentTitle}
+
                     />
                   );
                 })}
