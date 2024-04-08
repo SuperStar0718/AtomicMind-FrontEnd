@@ -7,22 +7,28 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { deleteDocument, loadChatHistory } from "@/actions/chat";
 import { loadUser } from "@/actions/auth";
-import { LOAD_CHAT_HISTORY, SET_CHAT_CONTEXT, SHOW_CITATION } from "@/actions/types";
+import {
+  LOAD_CHAT_HISTORY,
+  SET_CHAT_CONTEXT,
+  SHOW_CITATION,
+} from "@/actions/types";
 import { MoveToFolderDialog } from "@/Components/Modal/MoveToFolderDialog";
 
 const DocumentItem = ({
-  documentName,
+  fileName,
+  bookTitle,
   folderName,
-  setDocumentTitle
+  setDocumentTitle,
 }: {
-  documentName: string;
+  fileName: string;
+  bookTitle?: string;
   folderName?: string;
-  setDocumentTitle : (title:string)=>void
+  setDocumentTitle: (title: string) => void;
 }) => {
   const { userData } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const [openModal, setOpenModal] = useState(false);
-  
+
   const dropDownButton = useRef(null);
   const dropDownMenu = useRef(null);
 
@@ -30,7 +36,7 @@ const DocumentItem = ({
     const data = {
       id: userData._id,
       folderName: folderName,
-      documentName: documentName,
+      fileName: fileName,
     };
     dispatch(
       deleteDocument(data, () => {
@@ -43,20 +49,24 @@ const DocumentItem = ({
   const onClickDocument = () => {
     dispatch({
       type: SET_CHAT_CONTEXT,
-      payload: { type: "document", name: documentName },
+      payload: {
+        type: "document",
+        name: fileName,
+        folderName: folderName ? folderName : "",
+      },
     });
-    setDocumentTitle('')
+    setDocumentTitle(bookTitle);
+    console.log("bookTitle", bookTitle);
 
     dispatch(
       loadChatHistory(
-        { id: userData._id, type: "document", name: documentName },
+        { id: userData._id, type: "document", name: fileName },
         (res) => {
           dispatch({ type: LOAD_CHAT_HISTORY, payload: res });
-          dispatch({type:SHOW_CITATION})
+          dispatch({ type: SHOW_CITATION });
         }
       )
     );
-
   };
 
   useEffect(() => {
@@ -107,7 +117,7 @@ const DocumentItem = ({
           type="button"
           onClick={() => onClickDocument()}
         >
-          <span className="p-button-label p-c">{documentName}</span>
+          <span className="p-button-label p-c">{fileName}</span>
         </button>
         <button
           className="p-2 rounded hover:bg-gray-200 p-button p-component p-splitbutton-menubutton p-button-icon-only"
@@ -144,8 +154,11 @@ const DocumentItem = ({
           </div>
         </div>
       </div>
-      <MoveToFolderDialog  show={openModal} setOpenModal={setOpenModal} documentName={documentName} />
-
+      <MoveToFolderDialog
+        show={openModal}
+        setOpenModal={setOpenModal}
+        fileName={fileName}
+      />
     </div>
   );
 };

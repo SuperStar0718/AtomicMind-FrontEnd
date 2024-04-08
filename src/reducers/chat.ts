@@ -16,11 +16,13 @@ interface IChat {
   chat_history: IHistory[];
   type: string;
   name: string;
+  folderName: string;
 }
 const initialState: IChat = {
   chat_history: [],
   type: "",
   name: "",
+  folderName: "",
 };
 
 function chatReducer(state = initialState, action: any) {
@@ -62,6 +64,7 @@ function chatReducer(state = initialState, action: any) {
         ...state,
         type: payload.type,
         name: payload.name,
+        folderName: payload.folderName,
       };
     case LOAD_CHAT_HISTORY:
       return {

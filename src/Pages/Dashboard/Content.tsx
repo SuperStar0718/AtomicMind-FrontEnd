@@ -44,14 +44,21 @@ export interface IMessage {
   content: string;
 }
 
-const Content = ({ chat_history, type, name, documentTitle, setDocumentTitle }) => {
+const Content = ({
+  chat_history,
+  type,
+  name,
+  folderName,
+  documentTitle,
+  setDocumentTitle,
+}) => {
   const baseURL = import.meta.env.VITE_BACKEND_API || "";
   const { userData, showCitation } = useSelector(
     (state: RootState) => state.auth
   );
 
   const [showModal, setShowModal] = useState(false);
-  const [sourceDocuments, setSourceDocuments] = useState([]);
+  // const [sourceDocuments, setSourceDocuments] = useState([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedDocument, setSelectedDocument] = useState<any>();
   const [isThinking, setIsThinking] = useState(false);
@@ -162,17 +169,25 @@ const Content = ({ chat_history, type, name, documentTitle, setDocumentTitle }) 
   }, [name, type, userData]);
 
   const handleSubmit = async () => {
-    if(documentTitle=="" && type=="document"){
+    if (documentTitle == "" && type == "document") {
       toast.error("Please enter document title.");
       return;
     }
     setIsThinking(true);
-    const req: { id: string; prompt: IMessage; type: string; name: string, documentTitle:string } = {
+    const req: {
+      id: string;
+      prompt: IMessage;
+      type: string;
+      folderName: string;
+      name: string;
+      documentTitle: string;
+    } = {
       id: userData._id,
       prompt: { role: "user", content: query },
       type: type,
       name: name,
-      documentTitle: documentTitle
+      folderName: folderName,
+      documentTitle: documentTitle,
     };
     if (type == "") {
       toast.error("Please select a document to chat with you.");
@@ -244,7 +259,7 @@ const Content = ({ chat_history, type, name, documentTitle, setDocumentTitle }) 
           typeof parsedValue === "object" && parsedValue !== null;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const hasMetadata = isJsonObject && "metadata" in parsedValue;
-        setSourceDocuments(parsedValue.sourceDocuments);
+        // setSourceDocuments(parsedValue.sourceDocuments);
         dispatch({
           type: UPDATE_SOURCE_DOCUMENTS,
           payload: parsedValue.sourceDocuments,
@@ -352,7 +367,6 @@ const Content = ({ chat_history, type, name, documentTitle, setDocumentTitle }) 
                   placeholder="Please Enter Document Title."
                   onChange={handleInputChange}
                   value={documentTitle}
-
                   required
                 />
               )}
@@ -588,6 +602,7 @@ const Content = ({ chat_history, type, name, documentTitle, setDocumentTitle }) 
 const mapStateToProps = (state: RootState) => ({
   chat_history: state.chat.chat_history,
   type: state.chat.type,
+  folderName: state.chat.folderName,
   name: state.chat.name,
 });
 
