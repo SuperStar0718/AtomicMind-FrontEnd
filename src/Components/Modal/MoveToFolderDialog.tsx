@@ -3,18 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import Select from "react-tailwindcss-select";
 import { moveToFolder } from "@/actions/chat";
-import {
-  TEModal,
-  TEModalDialog,
-  TEModalContent,
-} from "tw-elements-react";
+import { TEModal, TEModalDialog, TEModalContent } from "tw-elements-react";
 import { loadUser } from "@/actions/auth";
 
 interface IOption {
   value: string;
   label: string;
 }
-export const MoveToFolderDialog = ({ show, setOpenModal, documentName }) => {
+export const MoveToFolderDialog = ({ show, setOpenModal, fileName }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [folderName, setFolderName] = useState<IOption>({} as IOption);
@@ -24,10 +20,15 @@ export const MoveToFolderDialog = ({ show, setOpenModal, documentName }) => {
   const { userData } = useSelector((state: RootState) => state.auth);
 
   const onClickMove = () => {
-      dispatch(moveToFolder({id:userData._id, folderName:folderName.value, documentName:documentName},()=>{
-        setOpenModal(false);
-        dispatch(loadUser());
-      }));
+    dispatch(
+      moveToFolder(
+        { id: userData._id, folderName: folderName.value, fileName: fileName },
+        () => {
+          setOpenModal(false);
+          dispatch(loadUser());
+        }
+      )
+    );
   };
 
   const folderChangeHandler = (value) => {
@@ -48,7 +49,7 @@ export const MoveToFolderDialog = ({ show, setOpenModal, documentName }) => {
     <TEModal
       show={show}
       setShow={setOpenModal}
-      className=" absolute top-0 left-0 right-0 z-50  w-[100vw] p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] "
+      className=" fixed top-0 left-0 z-50 w-screen   p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] "
     >
       <TEModalDialog>
         <TEModalContent>

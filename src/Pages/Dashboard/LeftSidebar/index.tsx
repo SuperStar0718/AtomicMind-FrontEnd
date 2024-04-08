@@ -19,11 +19,12 @@ export interface IDialogProps {
 }
 
 interface IDocumentItem {
-  documentName: string;
+  fileName: string;
   folderName?: string;
+  bookTitle?: string;
 }
 
-export const LeftSidebar = ({setDocumentTitle}) => {
+export const LeftSidebar = ({ setDocumentTitle }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [documents, setDocuments] = useState<IDocumentItem[]>([]);
   const [dialogProps, setDialogProps] = useState<IDialogProps>({
@@ -58,13 +59,17 @@ export const LeftSidebar = ({setDocumentTitle}) => {
     userData.folders?.forEach((folder) => {
       folder.documents?.forEach((document) => {
         allDocuments.push({
-          documentName: document,
+          fileName: document.fileName,
+          bookTitle: document.bookTitle,
           folderName: folder.folderName,
         });
       });
     });
     userData.documents?.forEach((document) => {
-      allDocuments.push({ documentName: document });
+      allDocuments.push({
+        fileName: document.fileName,
+        bookTitle: document.bookTitle,
+      });
     });
     setDocuments(allDocuments);
   }, [userData]);
@@ -120,10 +125,10 @@ export const LeftSidebar = ({setDocumentTitle}) => {
                       return (
                         <DocumentItem
                           key={index}
-                          documentName={document}
+                          fileName={document.fileName}
+                          bookTitle = {document.bookTitle}
                           folderName={folder.folderName}
-                    setDocumentTitle={setDocumentTitle}
-
+                          setDocumentTitle={setDocumentTitle}
                         />
                       );
                     })}
@@ -135,10 +140,10 @@ export const LeftSidebar = ({setDocumentTitle}) => {
                   return (
                     <DocumentItem
                       key={index}
-                      documentName={document.documentName}
+                      fileName={document.fileName}
+                      bookTitle={document.bookTitle}
                       folderName={document.folderName}
-                    setDocumentTitle={setDocumentTitle}
-
+                      setDocumentTitle={setDocumentTitle}
                     />
                   );
                 })}

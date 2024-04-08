@@ -47,7 +47,7 @@ export const deleteFolder =
 
 export const deleteDocument =
   (
-    data: { id: string; folderName: string; documentName: string },
+    data: { id: string; folderName: string; fileName: string },
     onSuccess = () => {},
     onFailed = () => {}
   ) =>
