@@ -4,6 +4,7 @@ import LeftSidebar from "./LeftSidebar";
 import { AppDispatch } from "@/store";
 import { useDispatch } from "react-redux";
 import { getSettings } from "@/actions/admin";
+import './styles.css'
 
 const AdminPanel = () => {
   const dispatch = useDispatch<AppDispatch>();
