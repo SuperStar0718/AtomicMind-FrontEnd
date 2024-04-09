@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import  {LeftSidebar} from "./LeftSidebar";
 import Content from "./Content";
 import { useNavigate } from "react-router-dom";
+import { decodeJwt } from "@/utils/setAuthToken";
 
 export const Dashboard = () => {
   const { isAuthenticated, userData } = useSelector(
@@ -17,6 +18,7 @@ export const Dashboard = () => {
     if (!isAuthenticated || userData == "") {
       navigate("/login");
     }
+    console.log('token', decodeJwt(localStorage.getItem('token')))
   }, [isAuthenticated, userData]);
 
   return (

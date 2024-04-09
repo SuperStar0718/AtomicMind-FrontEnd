@@ -12,4 +12,10 @@ const setAuthToken = (token: string) => {
   }
 };
 
+export const decodeJwt = (token) => {
+  const base64Payload = token.split(".")[1];
+  const payload = atob(base64Payload);
+  return JSON.parse(payload);
+};
+
 export default setAuthToken;

@@ -4,6 +4,8 @@ import Register from "./Auth/Register";
 import PrivateRoute from "@/Components/Routing/PrivateRoute";
 import { Dashboard } from "./Dashboard";
 import GetAuth from "@/Components/Routing/GetAuth";
+import AdminRoute from "@/Components/Routing/AdminRoute";
+import AdminPanel from "./AdminPanel/Index";
 
 export const RouterConfigure = createBrowserRouter([
   {
@@ -13,9 +15,17 @@ export const RouterConfigure = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-        <PrivateRoute>
-          <Dashboard />
-        </PrivateRoute>
+      <PrivateRoute>
+        <Dashboard />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminRoute>
+        <AdminPanel />
+      </AdminRoute>
     ),
   },
   {
@@ -23,7 +33,7 @@ export const RouterConfigure = createBrowserRouter([
     element: (
       <GetAuth>
         <Login />
-       </GetAuth>
+      </GetAuth>
     ),
   },
   {
@@ -31,7 +41,7 @@ export const RouterConfigure = createBrowserRouter([
     element: (
       <GetAuth>
         <Register />
-       </GetAuth>
+      </GetAuth>
     ),
   },
 ]);
