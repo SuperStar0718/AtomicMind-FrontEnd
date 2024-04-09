@@ -7,7 +7,6 @@ import { AppDispatch, RootState } from "@/store";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setSettings } from "@/actions/admin";
 import Select from "react-tailwindcss-select";
-import { nonStreamModel } from "./../../../../Backend/src/lib/llm";
 
 const LeftSidebar = ({
   streamTemperatureProps,
