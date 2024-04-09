@@ -272,9 +272,12 @@ const Content = ({
           .replace("markdown", "");
 
         dispatch({ type: UPDATE_CHAT_HISTORY, payload: text });
+
         // console.log("sourceDocuments:", sourceDocuments);
       }
     }
+    dispatch(loadUser());
+
     setIsThinking(false);
   };
 
