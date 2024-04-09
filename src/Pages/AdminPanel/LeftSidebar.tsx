@@ -7,7 +7,6 @@ import { AppDispatch, RootState } from "@/store";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setSettings } from "@/actions/admin";
 import Select from "react-tailwindcss-select";
-import { nonStreamModel } from "./../../../../Backend/src/lib/llm";
 
 const LeftSidebar = ({
   streamTemperatureProps,
@@ -138,6 +137,7 @@ const LeftSidebar = ({
       <div className="p-3 w-80">
         <div className="title">Streaming Model: </div>
         <Select
+        primaryColor="#2563EB"
           classNames={{
             menuButton: ({ isDisabled }) =>
               `flex text-sm  text-gray-500 border  border-gray-300 rounded shadow-sm transition-all duration-300 focus:outline-none ${
@@ -161,6 +161,7 @@ const LeftSidebar = ({
       <div className="p-3 w-80">
         <div className="title">Non Streaming Model: </div>
         <Select
+        primaryColor="#2563EB"
           classNames={{
             menuButton: ({ isDisabled }) =>
               `flex text-sm  text-gray-500 border  border-gray-300 rounded shadow-sm transition-all duration-300 focus:outline-none ${
