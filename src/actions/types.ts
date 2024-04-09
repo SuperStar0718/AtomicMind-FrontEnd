@@ -21,3 +21,5 @@ export const SET_ALERT: string = 'SET_ALERT';
 export const REMOVE_ALERT: string = 'REMOVE_ALERT';
 export const SHOW_CITATION: string = 'SHOW_CITATION';
 export const HIDE_CITATION: string = 'HIDE_CITATION';
+
+export const SET_SETTINGS: string = 'SET_SETTINGS';

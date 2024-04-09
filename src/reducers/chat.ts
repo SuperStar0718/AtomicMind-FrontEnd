@@ -18,7 +18,7 @@ interface IChat {
   name: string;
   folderName: string;
 }
-const initialState: IChat = {
+const initialState = {
   chat_history: [],
   type: "",
   name: "",
