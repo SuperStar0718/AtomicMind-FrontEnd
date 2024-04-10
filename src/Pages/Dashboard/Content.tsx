@@ -7,6 +7,7 @@ import { clearHistory, uploadFiles } from "@/actions/chat";
 import {
   HIDE_CITATION,
   LOAD_CHAT_HISTORY,
+  SELECT_ENVIRONMENT,
   SET_CHAT_HISTORY,
   SHOW_CITATION,
   UPDATE_CHAT_HISTORY,
@@ -24,6 +25,8 @@ import CloseButton from "@/assets/images/close.svg";
 import Userprofile from "@/assets/images/user.svg";
 import DeleteConfirmationModal from "@/Components/Modal/DeleteConfirmationModal";
 import { TERipple } from "tw-elements-react";
+import Select from "react-tailwindcss-select";
+
 import { Dropdown } from "flowbite";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
@@ -56,8 +59,24 @@ const Content = ({
   const { userData, showCitation } = useSelector(
     (state: RootState) => state.auth
   );
+  const {environments} = useSelector(
+    (state: RootState) => state.admin
+  );
+  const [environment, setEnvironment] = useState<any>({});
+
+  const [options, setOptions] = useState<any>([]);
 
   const [showModal, setShowModal] = useState(false);
+  const handleChangeEnvironment = (value) => {
+    console.log("value:", value);
+    setEnvironment(value);
+    dispatch({
+      type: SELECT_ENVIRONMENT,
+      payload: environments.find(
+        (item) => item.environment === value.value
+      ),
+    });
+  };
   // const [sourceDocuments, setSourceDocuments] = useState([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedDocument, setSelectedDocument] = useState<any>();
@@ -168,6 +187,27 @@ const Content = ({
     }
   }, [name, type, userData]);
 
+  useEffect(() => {
+    const options = environments?.map((item) => {
+      return {
+        value: item.environment,
+        label: item.environment,
+        disabled: false,
+      };
+    });
+    console.log("options:", options);
+    setOptions(options);
+    setEnvironment({
+      value: environments ? environments[0]?.environment : "",
+      label: environments ? environments[0]?.environment : "",
+      disabled: false,
+    });
+    // dispatch({
+    //   type: SELECT_ENVIRONMENT,
+    //   payload: environments ? environments[0] : {},
+    // });
+  }, [environments]);
+
   const handleSubmit = async () => {
     if (documentTitle == "" && type == "document") {
       toast.error("Please enter document title.");
@@ -181,6 +221,7 @@ const Content = ({
       folderName: string;
       name: string;
       documentTitle: string;
+      environment:string;
     } = {
       id: userData._id,
       prompt: { role: "user", content: query },
@@ -188,6 +229,7 @@ const Content = ({
       name: name,
       folderName: folderName,
       documentTitle: documentTitle,
+      environment: environment.value,
     };
     if (type == "") {
       toast.error("Please select a document to chat with you.");
@@ -527,8 +569,31 @@ const Content = ({
                   )}
                 </ScrollToBottom>
 
-                <div className="flex items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
-                  <div className="max-w-5xl flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]">
+                <div className="flex flex-col items-center self-end justify-center w-full gap-3 p-2 border-t md:p-6">
+                  <div className="w-full max-w-5xl">
+                    <Select
+                      primaryColor="#2563EB"
+                      classNames={{
+                        menuButton: ({ isDisabled }) =>
+                          `flex text-sm w-full max-w-5xl  text-gray-500 border  border-gray-300 rounded shadow-sm transition-all duration-300 focus:outline-none ${
+                            isDisabled
+                              ? "bg-gray-200"
+                              : "bg-white hover:border-gray-400 focus:border-blue-500 focus:ring focus:ring-blue-500/20"
+                          }`,
+                        menu: "absolute z-10 min-w-full max-w-5xl bg-white shadow-lg border rounded py-1 mt-1.5 text-sm text-gray-700",
+                        listItem: ({ isSelected }) =>
+                          `block transition duration-200 px-2 py-2 cursor-pointer select-none truncate rounded ${
+                            isSelected
+                              ? `text-white bg-blue-500`
+                              : `text-gray-500 hover:bg-blue-100 hover:text-blue-500`
+                          }`,
+                      }}
+                      value={environment}
+                      onChange={handleChangeEnvironment}
+                      options={options}
+                    />
+                  </div>
+                  <div className="max-w-5xl w-full flex flex-col flex-1 flex-grow relative border border-black/10 bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)]">
                     <textarea
                       ref={textareaRef}
                       id="question"

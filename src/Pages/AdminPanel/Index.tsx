@@ -45,12 +45,12 @@ const AdminPanel = ({ environmentProps }) => {
   const handleChangeEnvironment = (value) => {
     console.log("value:", value);
     setEnvironment(value);
-    dispatch({
-      type: SELECT_ENVIRONMENT,
-      payload: environmentProps.find(
-        (item) => item.environment === value.value
-      ),
-    });
+    // dispatch({
+    //   type: SELECT_ENVIRONMENT,
+    //   payload: environmentProps.find(
+    //     (item) => item.environment === value.value
+    //   ),
+    // });
   };
 
   const handleSave = () => {
