@@ -23,3 +23,4 @@ export const SHOW_CITATION: string = 'SHOW_CITATION';
 export const HIDE_CITATION: string = 'HIDE_CITATION';
 
 export const SET_SETTINGS: string = 'SET_SETTINGS';
+export const SELECT_ENVIRONMENT: string = 'SELECT_ENVIRONMENT';

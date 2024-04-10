@@ -9,6 +9,7 @@ import { setSettings } from "@/actions/admin";
 import Select from "react-tailwindcss-select";
 
 const LeftSidebar = ({
+  environment,
   streamTemperatureProps,
   nonStreamTemperatureProps,
   chunkSizeProps,
@@ -30,12 +31,12 @@ const LeftSidebar = ({
   const [streamingModel, setStreamingModel] = useState<any>({
     value: streamingModelProps,
     label: streamingModelProps,
-    disabled: false
+    disabled: false,
   });
   const [nonStreamingModel, setNonStreamingModel] = useState<any>({
     value: nonStreamingModelProps,
     label: nonStreamingModelProps,
-    disabled: false
+    disabled: false,
   });
   const [nonStreamTemperature, setNonStreamTemperature] = useState<number>(
     nonStreamTemperatureProps * 100
@@ -46,22 +47,28 @@ const LeftSidebar = ({
   );
 
   const handleChangeStreamingModel = (value) => {
-    console.log('value:', value)
+    console.log("value:", value);
     setStreamingModel(value);
   };
 
   const handleChangeNonStreamingModel = (value) => {
-    console.log('value:', value)
+    console.log("value:", value);
     setNonStreamingModel(value);
-  }
+  };
 
   useEffect(() => {
     setStreamTemperature(streamTemperatureProps * 100);
     setNonStreamTemperature(nonStreamTemperatureProps * 100);
     setChunkSize(chunkSizeProps / 50);
     setChunkOverlap(chunkOverlapProps / 50);
-    setStreamingModel({ value: streamingModelProps, label: streamingModelProps });
-    setNonStreamingModel({ value: nonStreamingModelProps, label: nonStreamingModelProps });
+    setStreamingModel({
+      value: streamingModelProps,
+      label: streamingModelProps,
+    });
+    setNonStreamingModel({
+      value: nonStreamingModelProps,
+      label: nonStreamingModelProps,
+    });
   }, [settings]);
   const handleStreamTemperature = (
     event: Event,
@@ -85,6 +92,7 @@ const LeftSidebar = ({
   const handleSubmit = () => {
     dispatch(
       setSettings({
+        environment: environment,
         streamTemperature: streamTemperature / 100,
         nonStreamTemperature: nonStreamTemperature / 100,
         chunkSize: chunkSize * 50,
@@ -137,7 +145,7 @@ const LeftSidebar = ({
       <div className="p-3 w-80">
         <div className="title">Streaming Model: </div>
         <Select
-        primaryColor="#2563EB"
+          primaryColor="#2563EB"
           classNames={{
             menuButton: ({ isDisabled }) =>
               `flex text-sm  text-gray-500 border  border-gray-300 rounded shadow-sm transition-all duration-300 focus:outline-none ${
@@ -161,7 +169,7 @@ const LeftSidebar = ({
       <div className="p-3 w-80">
         <div className="title">Non Streaming Model: </div>
         <Select
-        primaryColor="#2563EB"
+          primaryColor="#2563EB"
           classNames={{
             menuButton: ({ isDisabled }) =>
               `flex text-sm  text-gray-500 border  border-gray-300 rounded shadow-sm transition-all duration-300 focus:outline-none ${
@@ -192,12 +200,14 @@ const LeftSidebar = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  streamTemperatureProps: state.admin.streamTemperature,
-  nonStreamTemperatureProps: state.admin.nonStreamTemperature,
-  chunkSizeProps: state.admin.chunkSize,
-  chunkOverlapProps: state.admin.chunkOverlap,
-  streamingModelProps: state.admin.streamingModel,
-  nonStreamingModelProps: state.admin.nonStreamingModel,
+  environment: state.admin.selectedEnvironment.environment,
+  streamTemperatureProps: state.admin.selectedEnvironment.streamTemperature,
+  nonStreamTemperatureProps:
+    state.admin.selectedEnvironment.nonStreamTemperature,
+  chunkSizeProps: state.admin.selectedEnvironment.chunkSize,
+  chunkOverlapProps: state.admin.selectedEnvironment.chunkOverlap,
+  streamingModelProps: state.admin.selectedEnvironment.streamingModel,
+  nonStreamingModelProps: state.admin.selectedEnvironment.nonStreamingModel,
 });
 
 export default connect(mapStateToProps)(LeftSidebar);

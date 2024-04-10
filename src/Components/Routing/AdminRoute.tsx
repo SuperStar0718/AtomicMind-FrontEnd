@@ -35,6 +35,8 @@ const AdminRoute = ({ children }: AdminRouteType) => {
 
   const decodedData = decodeJwt(token);
   if (decodedData.payload.role == "ADMIN") {
+    // if there is a token set axios headers for all requests
+    setAuthToken(localStorage.token);
     return children ? children : <Outlet />;
   } else if (decodedData.payload.role != "ADMIN") {
     presentPage();

@@ -1,17 +1,17 @@
-import {
-  SET_SETTINGS
-} from "../actions/types";
-
-
+import { SET_SETTINGS, SELECT_ENVIRONMENT } from "../actions/types";
 
 const initialState = {
-  streamTemperature: 0.1,
-  nonStreamTemperature: 0.1,
-  chunkSize: 0,
-  chunkOverlap: 0,
-  systemPrompt:"",
-  streamingModel:"",
-  nonStreamingModel:"",
+  environments: [],
+  selectedEnvironment: {
+    environment: "",
+    streamTemperature: 0,
+    nonStreamTemperature: 0,
+    chunkSize: 0,
+    chunkOverlap: 0,
+    systemPrompt: "",
+    streamingModel: "",
+    nonStreamingModel: "",
+  },
 };
 
 function adminReducer(state = initialState, action: any) {
@@ -23,6 +23,11 @@ function adminReducer(state = initialState, action: any) {
         ...state,
         ...payload,
       };
+      case SELECT_ENVIRONMENT:
+        return {
+          ...state,
+          selectedEnvironment: payload,
+        };
     default:
       return state;
   }

@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/store";
 import { connect, useDispatch } from "react-redux";
 import { setSettings } from "@/actions/admin";
 
-const RightSidebar = ({systemPromptProps}) => {
+const RightSidebar = ({environment, systemPromptProps}) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [systemPrompt, setSystemPrompt] = useState<string>(systemPromptProps);
@@ -13,6 +13,7 @@ const RightSidebar = ({systemPromptProps}) => {
   const handleSubmit=()=>{
     dispatch(
       setSettings({
+        environment: environment,
         systemPrompt: systemPrompt,
       })
     );
@@ -42,7 +43,8 @@ const RightSidebar = ({systemPromptProps}) => {
   );
 };
 const mapStateToProps = (state: RootState) => ({
-  systemPromptProps: state.admin.systemPrompt,
+  environment: state.admin.selectedEnvironment.environment,
+  systemPromptProps: state.admin.selectedEnvironment.systemPrompt,
 });
 
 export default connect(mapStateToProps)(RightSidebar);
