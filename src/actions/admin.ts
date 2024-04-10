@@ -10,7 +10,7 @@ export const getSettings = () => async (dispatch: AppDispatch) => {
     console.log('res:', res);
     dispatch({
       type: SET_SETTINGS,
-      payload: res.data[0],
+      payload: {environments: res.data},
     });
   } catch (err) {
     console.error(err);
@@ -24,10 +24,34 @@ export const setSettings = (formData: any) => async (dispatch: AppDispatch) => {
     console.log('res:', res);
     dispatch({
       type: SET_SETTINGS,
-      payload: res.data,
+      payload: {selectedEnvironment: res.data},
     });
     toast.success("Settings Updated Successfully");
   } catch (err) {
+    console.error(err);
+  }
+}
+
+export const saveAsEnvironment=(formData, onSuccess=()=>{}, onFailed=()=>{})=> async(dispatch: AppDispatch)=>{
+  try{
+    const res = await api.post("admin/saveAsEnvironment", formData);
+    console.log('res:', res);
+    toast.success("Environment Saved Successfully");
+    onSuccess();
+  }catch(err){
+    onFailed();
+    console.error(err);
+  }
+}
+
+export const deleteEnvironment=(formData, onSuccess=()=>{}, onFailed=()=>{})=> async(dispatch: AppDispatch)=>{
+  try{
+    const res = await api.post("admin/deleteEnvironment", formData);
+    console.log('res:', res);
+    toast.success("Environment Deleted Successfully");
+    onSuccess();
+  }catch(err){
+    onFailed();
     console.error(err);
   }
 }
