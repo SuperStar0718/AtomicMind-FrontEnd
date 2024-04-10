@@ -98,7 +98,7 @@ const AdminPanel = ({ environmentProps }) => {
             />
           </div>
           <div className="flex flex-row items-center justify-center">
-            <Button variant="contained" className="w-32" onClick={handleSave}>
+            <Button  className="w-32" onClick={handleSave}>
               Save As
             </Button>
             <SaveAsEnvironmentModal
@@ -108,7 +108,6 @@ const AdminPanel = ({ environmentProps }) => {
           </div>
           <div className="flex flex-row items-center justify-center">
             <Button
-              variant="contained"
               color="warning"
               className="w-32"
               onClick={handleOpen}
