@@ -17,7 +17,7 @@ const LeftSidebar = ({
   streamingModelProps,
   nonStreamingModelProps,
 }) => {
-  const settings = useSelector((state: RootState) => state.admin);
+  const settings = useSelector((state: RootState) => state.admin.selectedEnvironment);
   const dispatch = useDispatch<AppDispatch>();
   const options = [
     { value: "claude-3-haiku-20240307", label: "claude-3-haiku-20240307" },
