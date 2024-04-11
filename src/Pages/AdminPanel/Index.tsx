@@ -10,7 +10,7 @@ import { Button, Modal } from "flowbite-react";
 import "./styles.css";
 import { SELECT_ENVIRONMENT } from "@/actions/types";
 
-const AdminPanel = ({ environmentProps }) => {
+const AdminPanel = ({ environmentProps, selectedEnvironmentProps }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [environment, setEnvironment] = useState<any>({});
@@ -21,7 +21,7 @@ const AdminPanel = ({ environmentProps }) => {
 
   const handleOpen = () => setOpen(!open);
   useEffect(() => {
-    console.log("environmentProps:", environmentProps);
+    // console.log("environmentProps:", environmentProps);
     const options = environmentProps?.map((item) => {
       return {
         value: item.environment,
@@ -29,28 +29,32 @@ const AdminPanel = ({ environmentProps }) => {
         disabled: false,
       };
     });
-    console.log("options:", options);
+    // console.log("options:", options);
     setOptions(options);
-    setEnvironment({
-      value: environmentProps[0]?.environment,
-      label: environmentProps[0]?.environment,
-      disabled: false,
-    });
-    dispatch({
-      type: SELECT_ENVIRONMENT,
-      payload: environmentProps[0] ? environmentProps[0] : {},
-    });
+    if (selectedEnvironmentProps.environment == "") {
+      console.log("selected Env");
+      setEnvironment({
+        value: environmentProps[0]?.environment,
+        label: environmentProps[0]?.environment,
+        disabled: false,
+      });
+      if (environmentProps[0])
+        dispatch({
+          type: SELECT_ENVIRONMENT,
+          payload: environmentProps[0] ? environmentProps[0] : {},
+        });
+    }
   }, [environmentProps]);
 
   const handleChangeEnvironment = (value) => {
     console.log("value:", value);
     setEnvironment(value);
-    // dispatch({
-    //   type: SELECT_ENVIRONMENT,
-    //   payload: environmentProps.find(
-    //     (item) => item.environment === value.value
-    //   ),
-    // });
+    dispatch({
+      type: SELECT_ENVIRONMENT,
+      payload: environmentProps.find(
+        (item) => item.environment === value.value
+      ),
+    });
   };
 
   const handleSave = () => {
@@ -98,7 +102,7 @@ const AdminPanel = ({ environmentProps }) => {
             />
           </div>
           <div className="flex flex-row items-center justify-center">
-            <Button  className="w-32" onClick={handleSave}>
+            <Button className="w-32" onClick={handleSave}>
               Save As
             </Button>
             <SaveAsEnvironmentModal
@@ -107,24 +111,21 @@ const AdminPanel = ({ environmentProps }) => {
             />
           </div>
           <div className="flex flex-row items-center justify-center">
-            <Button
-              color="warning"
-              className="w-32"
-              onClick={handleOpen}
-            >
+            <Button color="warning" className="w-32" onClick={handleOpen}>
               Delete
             </Button>
             <Modal show={open} onClose={() => setOpen(false)}>
               <Modal.Body>
-                  <p className="text-xl leading-relaxed text-gray-500 dark:text-gray-400">
-                   Are you sure you want to delete this `{environment.label}`  environment ?
-                  </p>
-              <div className="flex flex-row-reverse gap-3" >
-                <Button color="gray" onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={() => handleDelete()}>OK</Button>
-              </div>
+                <p className="text-xl leading-relaxed text-gray-500 dark:text-gray-400">
+                  Are you sure you want to delete this `{environment.label}`
+                  environment ?
+                </p>
+                <div className="flex flex-row-reverse gap-3">
+                  <Button color="gray" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={() => handleDelete()}>OK</Button>
+                </div>
               </Modal.Body>
             </Modal>
           </div>
@@ -139,6 +140,7 @@ const AdminPanel = ({ environmentProps }) => {
 };
 const mapStateToProps = (state: RootState) => ({
   environmentProps: state.admin.environments,
+  selectedEnvironmentProps: state.admin.selectedEnvironment,
 });
 
 export default connect(mapStateToProps)(AdminPanel);
