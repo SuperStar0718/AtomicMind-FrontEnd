@@ -9,6 +9,7 @@ const initialState = {
     chunkSize: 0,
     chunkOverlap: 0,
     systemPrompt: "",
+    userPrompt:"",
     streamingModel: "",
     nonStreamingModel: "",
   },
