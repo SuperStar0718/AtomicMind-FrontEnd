@@ -9,7 +9,7 @@ import { loadUser } from "@/actions/auth";
 import { IDialogProps } from "@/Pages/Dashboard/LeftSidebar";
 import toast from "react-hot-toast";
 
-const fileTypes = ["PDF", "TXT"];
+const fileTypes = ["PDF", "TXT","docx","doc"];
 interface IOption {
   value: string;
   label: string;

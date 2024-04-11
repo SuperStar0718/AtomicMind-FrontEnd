@@ -5,7 +5,7 @@ import Slider from "@mui/material/Slider";
 import Button from "@mui/material/Button";
 import { AppDispatch, RootState } from "@/store";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { setSettings } from "@/actions/admin";
+import { getSettings, setSettings } from "@/actions/admin";
 import Select from "react-tailwindcss-select";
 
 const LeftSidebar = ({
