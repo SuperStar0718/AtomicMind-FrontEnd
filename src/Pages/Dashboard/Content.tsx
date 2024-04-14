@@ -17,10 +17,12 @@ import { toast } from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import UserImage from "@/assets/images/user.png";
 import BotImage from "@/assets/images/bot.png";
+import SendIcon from "@/assets/images/send-icon.png";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { loadUser, logoutAction } from "@/actions/auth";
-import ClearHistory from "@/assets/images/removeHistory.svg";
+import ClearHistory from "@/assets/images/delete-icon.png";
+import FileIcon from "@/assets/images/file-icon.png";
 import CloseButton from "@/assets/images/close.svg";
 import Userprofile from "@/assets/images/user.svg";
 import DeleteConfirmationModal from "@/Components/Modal/DeleteConfirmationModal";
@@ -370,27 +372,13 @@ const Content = ({
         <div>
           <div className="border-b-2 border-b-gray-300  w-full px-3 py-2 h-[48px] mt-[48px] md:mt-0 flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-medium md:text-base">
-              <h3 className="hidden md:block">Conversation with</h3>
+              <h3 className="hidden md:block">Atomic Ask with</h3>
               <span
-                className="p-tag p-component bg-[#6366f1] text-white cursor-pointer  h-[26px] flex justify-between items-center py-[0.2rem] px-[0.7rem]  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
+                className="p-tag p-component bg-[#41814F] text-white cursor-pointer  h-[26px] flex justify-between gap-1 items-center py-[0.2rem] px-[0.7rem]  border rounded-lg border-[#41814F] hover:bg-[#489258]"
                 data-pc-name="tag"
                 data-pc-section="root"
               >
-                <svg
-                  aria-hidden="true"
-                  focusable="false"
-                  data-prefix="fas"
-                  data-icon="file-zipper"
-                  className="items-center h-3 mr-2 svg-inline--fa fa-file-zipper fa-sm"
-                  role="img"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 384 512"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM96 48c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16zm-6.3 71.8c3.7-14 16.4-23.8 30.9-23.8h14.8c14.5 0 27.2 9.7 30.9 23.8l23.5 88.2c1.4 5.4 2.1 10.9 2.1 16.4c0 35.2-28.8 63.7-64 63.7s-64-28.5-64-63.7c0-5.5 .7-11.1 2.1-16.4l23.5-88.2zM112 336c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H112z"
-                  ></path>
-                </svg>
+                <img src={FileIcon} width={13} alt="" />
                 <span
                   className="flex items-center justify-center w-full h-full text-xs center text-"
                   data-pc-section="value"
@@ -424,7 +412,7 @@ const Content = ({
                   <img
                     src={ClearHistory}
                     alt=""
-                    className="h-[25px] w-[25px]"
+                    className="h-[20px] w-[20px]"
                   />
                 </button>
               </TERipple>
@@ -614,21 +602,7 @@ const Content = ({
                           className="flex"
                           onClick={onClickSubmit}
                         >
-                          <svg
-                            aria-hidden="true"
-                            focusable="false"
-                            data-prefix="fas"
-                            data-icon="paper-plane"
-                            className="w-5 h-5 svg-inline--fa fa-paper-plane fa-lg text-[#6366f1]"
-                            role="img"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 512 512"
-                          >
-                            <path
-                              fill="currentColor"
-                              d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"
-                            ></path>
-                          </svg>
+                          <img src={SendIcon} width={24} alt="" />
                           <span className="p-button-label p-c">&nbsp;</span>
                         </button>
                       </div>

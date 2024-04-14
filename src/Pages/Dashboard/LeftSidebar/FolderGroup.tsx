@@ -6,7 +6,7 @@ import type { InstanceOptions } from "flowbite";
 
 import ThreeDot from "@/assets/images/three_dot.svg";
 import RightArrow from "@/assets/images/right_arrow.svg";
-import Folder from "@/assets/images/folder.svg";
+import Folder from "@/assets/images/folders-icon.png";
 
 const FolderGroup = ({ children }) => {
   const [opened, setOpened] = useState(false);

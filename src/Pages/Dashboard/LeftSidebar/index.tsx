@@ -3,8 +3,8 @@ import { UploadDialog } from "@/Components/Modal/UploadDialog";
 import FolderGroup from "./FolderGroup";
 import { FolderItem } from "./FolderItem";
 import DocumentItem from "./DocumentItem";
-import UploadImage from "@/assets/images/upload.svg";
-import ChatIcon from "@/assets/images/chatIcon.svg";
+import UploadImage from "@/assets/images/upload-icon.png";
+import ChatIcon from "@/assets/images/chat-icon.png";
 import { useEffect, useState } from "react";
 import { CreateFolderDialog } from "@/Components/Modal/CreateFolderDialog";
 import { useDispatch, useSelector } from "react-redux";
@@ -82,7 +82,7 @@ export const LeftSidebar = ({ setDocumentTitle }) => {
             <div className="flex flex-col gap-2 p-2">
               <button
                 aria-label="Upload Documents"
-                className="items-center cursor-pointer  h-[35px] flex justify-between py-[0.65625rem] px-[1.09375rem] text-[#6366f1] border rounded-lg border-[#6366f1]"
+                className="items-center cursor-pointer  h-[35px] flex justify-between py-[0.65625rem] px-[1.09375rem] text-[#41814F] border rounded-lg border-[#41814F]"
                 data-pc-name="button"
                 data-pc-section="root"
                 onClick={() => uploadDocument()}
@@ -90,18 +90,18 @@ export const LeftSidebar = ({ setDocumentTitle }) => {
                 <img
                   src={UploadImage}
                   alt=""
-                  className="w-[14px] h-[14px] text-[#6366f1]"
+                  className="w-[14px] h-[14px] text-[#41814F]"
                 />
                 <span
                   className="flex items-center justify-center w-full text-sm font-semibold text-center h-fit"
                   data-pc-section="label"
                 >
-                  Upload Documents
+                  Upload Files
                 </span>
               </button>
               <button
                 aria-label="Chat with All Documents"
-                className="items-center bg-[#6366f1] text-white cursor-pointer  h-[35px] flex justify-between py-[0.65625rem] px-[1.09375rem]  border rounded-lg border-[#6366f1] hover:bg-[#4f46e5]"
+                className="items-center bg-[#41814F] text-white cursor-pointer  h-[35px] flex justify-between py-[0.65625rem] px-[1.09375rem]  border rounded-lg border-[#41814F] hover:bg-[#489258]"
                 onClick={() => onClickChatAllDocument()}
               >
                 <img src={ChatIcon} alt="" className="w-[14px] h-[14px]" />
@@ -109,7 +109,7 @@ export const LeftSidebar = ({ setDocumentTitle }) => {
                   className="flex items-center justify-center w-full text-sm font-semibold text-center h-fit"
                   data-pc-section="label"
                 >
-                  Chat with All Documents
+                  Chat with All Files
                 </span>
               </button>
             </div>
@@ -126,7 +126,7 @@ export const LeftSidebar = ({ setDocumentTitle }) => {
                         <DocumentItem
                           key={index}
                           fileName={document.fileName}
-                          bookTitle = {document.bookTitle}
+                          bookTitle={document.bookTitle}
                           folderName={folder.folderName}
                           setDocumentTitle={setDocumentTitle}
                         />
