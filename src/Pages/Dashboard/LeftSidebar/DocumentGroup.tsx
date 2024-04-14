@@ -6,7 +6,7 @@ import type { InstanceOptions } from "flowbite";
 
 import ThreeDot from "@/assets/images/three_dot.svg";
 import RightArrow from "@/assets/images/right_arrow.svg";
-import Document from "@/assets/images/document.svg";
+import Document from "@/assets/images/all-files-icon.png";
 
 const DocumentGroup = ({ children }) => {
   const [opened, setOpened] = useState(false);
@@ -90,7 +90,7 @@ const DocumentGroup = ({ children }) => {
           >
             <img src={Document} alt="" className="h-[14px] w-[14px] " />
             <span data-pc-section="label" className="text-sm ">
-              All Documents
+              All Files
             </span>
           </button>
           <button
@@ -108,7 +108,7 @@ const DocumentGroup = ({ children }) => {
               className="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 dark:text-gray-200"
               onClick={() => onClickUploadDocument()}
             >
-              Upload Documents
+              Upload Files
             </div>
           </div>
         </div>
