@@ -1,8 +1,8 @@
 import {  TERipple, TEInput } from "tw-elements-react";
-import Logo from "../../assets/images/login.webp";
+import Logo from "../../assets/images/rabbit.png";
 import { FormValues } from "./Register";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "@/store";
 import { loginAction } from "@/actions/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -86,8 +86,6 @@ function Login() {
                 </label>
               </div>
 
-              {/* <!--Forgot password link--> */}
-              <a href="#!">Forgot password?</a>
             </div>
 
             {/* <!-- Login button --> */}
