@@ -40,7 +40,7 @@ import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import type { DropdownOptions, DropdownInterface } from "flowbite";
 import type { InstanceOptions } from "flowbite";
 
-const fileTypes = ["PDF", "TXT"];
+const fileTypes = ["PDF", "DOCX", "DOC", "TXT"];
 /**
  * Represents a message in the chat.
  */
@@ -61,11 +61,11 @@ const Content = ({
   const { userData, showCitation } = useSelector(
     (state: RootState) => state.auth
   );
-  const {environments} = useSelector(
-    (state: RootState) => state.admin
-  );
+  const { environments } = useSelector((state: RootState) => state.admin);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [environment, setEnvironment] = useState<any>({});
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [options, setOptions] = useState<any>([]);
 
   const [showModal, setShowModal] = useState(false);
@@ -74,9 +74,7 @@ const Content = ({
     setEnvironment(value);
     dispatch({
       type: SELECT_ENVIRONMENT,
-      payload: environments.find(
-        (item) => item.environment === value.value
-      ),
+      payload: environments.find((item) => item.environment === value.value),
     });
   };
   // const [sourceDocuments, setSourceDocuments] = useState([]);
@@ -223,7 +221,7 @@ const Content = ({
       folderName: string;
       name: string;
       documentTitle: string;
-      environment:string;
+      environment: string;
     } = {
       id: userData._id,
       prompt: { role: "user", content: query },
