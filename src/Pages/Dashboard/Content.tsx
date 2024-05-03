@@ -312,6 +312,7 @@ const Content = ({
           .replace(/\\n/g, "\n")
           .replace(/```$/, "")
           .replace("markdown", "");
+          console.log('text:',text)
 
         dispatch({ type: UPDATE_CHAT_HISTORY, payload: text });
 

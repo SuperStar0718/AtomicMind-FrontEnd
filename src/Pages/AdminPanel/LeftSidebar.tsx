@@ -23,6 +23,7 @@ const LeftSidebar = ({
     { value: "claude-3-haiku-20240307", label: "claude-3-haiku-20240307" },
     { value: "claude-3-opus-20240229", label: "claude-3-opus-20240229" },
     { value: "gpt-4-turbo-preview", label: "gpt-4-turbo-preview" },
+    { value: "claude-3-sonnet-20240229", label: "claude-3-sonnet-20240229" },
   ];
 
   const [streamTemperature, setStreamTemperature] = useState<number>(
