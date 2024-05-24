@@ -244,13 +244,28 @@ const Content = ({
     setRows(1);
 
     // dispatch(generateResponse(req));
-    const response = await fetch(baseURL + "api/chat/generateResponse", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(req),
-    });
+    let response;
+    try {
+      response = await fetch(baseURL + "api/chat/generateResponse", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+    } catch (err) {
+      console.error("An error occurred:", err);
+      toast.error("Please try again later.");
+      setIsThinking(false);
+      dispatch({
+        type: UPDATE_CHAT_HISTORY,
+        payload: "Please try again later.",
+      });
+    }
     const reader = response.body.getReader();
 
     let receivedText = "";
@@ -312,7 +327,7 @@ const Content = ({
           .replace(/\\n/g, "\n")
           .replace(/```$/, "")
           .replace("markdown", "");
-          console.log('text:',text)
+        console.log("text:", text);
 
         dispatch({ type: UPDATE_CHAT_HISTORY, payload: text });
 
